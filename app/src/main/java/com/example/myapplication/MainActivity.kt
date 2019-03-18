@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -26,7 +27,10 @@ class MainActivity : AppCompatActivity() {
     val receiverNames = mutableListOf<String>("","","","")
     val receiverDeviceTokens = mutableListOf<String>("","","","")
 
+    var questionId : String = ""
     var questionGenderCondition : String = ""
+    var questionTitle : String = ""
+    var questionTempPhrase : String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,10 +45,26 @@ class MainActivity : AppCompatActivity() {
 
         friendShuffulBtn.setOnClickListener {
             displayReceiver(receiverImage0, receiverName0,0)
-            displayReceiver(receiverImage1,receiverName1,1)
+            displayReceiver(receiverImage1, receiverName1,1)
             displayReceiver(receiverImage2, receiverName2,2)
             displayReceiver(receiverImage3, receiverName3,3)
         }
+
+    //　TODO("レシーバー画像のボタン化→ホメる機能の検証")
+
+        receiverImage0.setOnClickListener{
+            serveReceiver(0)
+        }
+        receiverImage1.setOnClickListener{
+            serveReceiver(1)
+        }
+        receiverImage2.setOnClickListener{
+            serveReceiver(2)
+        }
+        receiverImage3.setOnClickListener{
+            serveReceiver(3)
+        }
+
 
         decideQuestion()
 
@@ -52,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
     fun decideQuestion() {
         // 質問の検索・取得
-        var query = NCMBQuery<NCMBObject>("m_questions")
+        val query = NCMBQuery<NCMBObject>("m_questions")
 
         query.whereEqualTo("releaseFlg","1")
         query.findInBackground { objs, e ->
@@ -60,23 +80,28 @@ class MainActivity : AppCompatActivity() {
             val doubleVal: Double = objs.size.toDouble()
             var noRepeat = false
 
-            if (this.dataQuestions.size == 0) {
+            if (this.dataQuestions.isEmpty()) {
                 //TODO("取得されなかった場合の動作")
             } else {
-
-                val num = (0..this.dataQuestions.size.toInt()).random()
+                val num = (0..(this.dataQuestions.size.toInt() - 1)).random()
                 val objectId = this.dataQuestions[num].objectId
 
                 //TODO("最初の質問（画像読み込みタイミング）は別でオブジェクトIDを取得しておく")
                 // firstQImageId = objectId!
 
                 questionGenderCondition = objs[num].getString("genderCondition")
-                questionPhrase.text = objs[num].getString("questionPhrase")
-                val qImageFileName = objs[num].objectId
+                questionTitle = objs[num].getString("title")
+                questionTempPhrase = objs[num].getString("questionPhrase")
+                questionId = objs[num].objectId
+
+                questionPhrase.text = questionTempPhrase
+                val qImageFileName = questionId
                 val file = NCMBFile("$qImageFileName.png")
+                Log.d("[DEBUG]", this.questionId)
                 file.fetchInBackground { data, eFile ->
-                    if (e != null) {
+                    if (eFile != null) {
                         //失敗
+                        questionImage.setImageResource(R.drawable.noquestionimage)
                         Log.d("[ERROR]", eFile.toString())
                     } else {
                         //成功
@@ -85,9 +110,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 // 質問の検索・取得
-                var queryReceiver = NCMBQuery<NCMBObject>("m_users")
+                val queryReceiver = NCMBQuery<NCMBObject>("m_users")
                 queryReceiver.findInBackground { objs, eFile ->
-                    if (e != null) {
+                    if (eFile != null) {
                         //失敗
                         Log.d("[ERROR]", eFile.toString())
                     } else {
@@ -114,13 +139,13 @@ class MainActivity : AppCompatActivity() {
         while (isDoubling && countRandom < 20) {
             // isDoublingがtrue->被りあり->乱数発生、レシーバー表示を被りがなくなるまで繰り返す
             // 乱数をふる
-            if (this.dataReceivers.size == 0) {
+            if (this.dataReceivers.isEmpty()) {
                 // すべての画像をユーザなしに設定
                 receiverImage.setImageResource(R.drawable.noimage)
                 receiverName.text = "ユーザがいません"
                 return
             }
-            val numRondom = (0..this.dataReceivers.size.toInt()).random()
+            val numRondom = (0..(this.dataReceivers.size.toInt() - 1)).random()
             val objectId = this.dataReceivers[numRondom].objectId
             for (num in 0..receiverNum) {
                 // レシーバー番号の分だけ配列をチェックする
@@ -172,4 +197,34 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    fun serveReceiver (receiverNum: Int) {
+        val receiverName : String = receiverNames[receiverNum]
+        if (receiverName.isEmpty()) Log.d("[ERROR]", "このメンバーは褒められません") else {
+            val displaySrc = "$receiverName さんを「$questionTitle」とホメました"
+
+            // ホメるテーブル格納用のNCMBObjectを作成
+            val obj = NCMBObject("e_serve")
+            // ホメるテーブルのカラムに値を設定
+            obj.put("questionId", questionId)
+            obj.put("readFlg","0" )
+            obj.put("questionTitle", this.questionTitle)
+//            obj.put(, "serverId")
+//            obj.put(, "serverTitle")
+            obj.put("receiverId",objectIds[receiverNum] )
+            obj.put("questionPhrase",this.questionTempPhrase)
+
+            // データストアへの保存を実施
+            obj.saveInBackground{ error ->
+                if (error != null) {
+                    // 失敗
+                    Log.d("[ERROR]", error.toString())
+                } else {
+                    Log.d("[DEBUG]", obj.toString())
+                    Log.d("[DEBUG]", "e_serveデータ保存成功")
+                }
+            }
+        }
+    }
 }
+
