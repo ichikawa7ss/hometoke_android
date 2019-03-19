@@ -36,7 +36,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        // 初期化
+
+//        singltonクラスの宣言
+        FriendData.onCreateApplication(applicationContext)
+
+        // NCMB初期化
         NCMB.initialize(applicationContext, "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1", "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7")
 
         allShuffulBtn.setOnClickListener {
@@ -49,8 +53,6 @@ class MainActivity : AppCompatActivity() {
             displayReceiver(receiverImage2, receiverName2,2)
             displayReceiver(receiverImage3, receiverName3,3)
         }
-
-    //　TODO("レシーバー画像のボタン化→ホメる機能の検証")
 
         receiverImage0.setOnClickListener{
             serveReceiver(0)
