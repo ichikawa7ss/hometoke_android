@@ -1,13 +1,15 @@
 package com.example.myapplication
 
 import android.content.Context
+import android.os.Parcel
+import android.os.Parcelable
 import com.nifcloud.mbaas.core.NCMBObject
 
 class FriendData private constructor(context: Context) {
+    var friendList = mutableListOf<NCMBObject>()
+
     companion object {
         private var _instance: FriendData? = null
-        var friendInfo = listOf<NCMBObject>()
-
 
         fun onCreateApplication(applicationContext: Context) {
             // Application#onCreateのタイミングでシングルトンが生成される
@@ -24,72 +26,65 @@ class FriendData private constructor(context: Context) {
                 }
             }
     }
-}
 
-class CacheFriendsSingleton {
 
-//    var fData = FriendData(friendInfo:[])
-//
-//    //友達キャッシュ用シングルトンを宣言
-//    static let sharedFriend: CacheFriendsSingleton = CacheFriendsSingleton()
-//    private override init() {}
-//
-//    // 友達データ（data）を追加
-//    func addFriendData(data:NCMBObject) {
-//        fData.friendInfo.append(data)
-//    }
-//
-//    // 友達リストから全てのユーザーを取り出す
-//    func getFriendList (parentObj: [NCMBObject]) -> [NCMBObject] {
-//        // 返り値の配列を設定
-//        let dataTemp = parentObj
-//        var childObj : [NCMBObject] = []
-//
-//        // 友達リスト内の友達一人一人をチェック
-//        for friend in dataTemp {
-//            // フレンドIDを持つ友達データを取得
-//            if let friendInfo:NCMBObject = friend.object(forKey: "friendId") as? NCMBObject {
-//            childObj.append(friendInfo)
-//        }
-//        }
-//        return childObj
-//    }
-//
-//    // 引数なしで全ての友達を取得
-//    func getFriendList () -> [NCMBObject] {
-//        // 返り値の配列を設定
-//        let dataTemp = self.fData.friendInfo
-//        var childObj : [NCMBObject] = []
-//
-//        // 友達リスト内の友達一人一人をチェック
-//        for friend in dataTemp {
-//            // フレンドIDを持つ友達データを取得
-//            if let friendInfo:NCMBObject = friend.object(forKey: "friendId") as? NCMBObject {
-//            childObj.append(friendInfo)
-//        }
-//        }
-//        return childObj
-//    }
-//
-//
-//    // 性別の検索条件に対して一致する友達のみを返す
-//    func getSpecificGenderFriends (genderCondistion : String,data : [NCMBObject]) -> [NCMBObject] {
-//        let dataTemp = data
-//        // 返り値の配列を設定
-//        var specificGenderFriend : [NCMBObject] = []
-//
-//        // 友達リスト内の友達一人一人をチェック
-//        for friend in dataTemp {
-//            // フレンドIDを持つ友達データを取得
-//            if let friendInfo:NCMBObject = friend.object(forKey: "friendId") as? NCMBObject {
-//            // 友達の性別を取得
-//            let friendGender:String = friendInfo.object(forKey: "gender") as! String
-//            // 質問属性が”すべて” もしくは友達の性別と同じなら返り値に追加
-//            if (genderCondistion == "すべて" || genderCondistion == friendGender) {
-//                specificGenderFriend.append(friendInfo)
-//            }
-//        }
-//        }
-//        return specificGenderFriend
-//    }
+    // 友達データ（data）を追加
+    fun addFriendData(data: NCMBObject) {
+        friendList.add(data)
+    }
+
+    // 友達リストから全てのユーザーを取り出す
+    fun getFriendList(parentObj: Collection<NCMBObject>): Collection<NCMBObject> {
+        // 返り値の配列を設定
+        val dataTemp = parentObj
+        var childObj = mutableListOf<NCMBObject>()
+
+        // 友達リスト内の友達一人一人をチェック
+        for (friend in parentObj) {
+
+            // フレンドIDを持つ友達データを取得
+            if (!friend.getJSONObject("friendId").isNull("objectId")) {
+                childObj.add(friend)
+            }
+        }
+        return childObj
+    }
+
+    // 引数なしで全ての友達を取得
+    fun getFriendList(): Collection<NCMBObject> {
+        // 返り値の配列を設定
+        val dataTemp = friendList
+        var childObj = mutableListOf<NCMBObject>()
+
+        // 友達リスト内の友達一人一人をチェック
+        for (friend in dataTemp) {
+            // フレンドIDを持つ友達データを取得
+            if (!friend.getJSONObject("friendId").isNull("objectId")) {
+                childObj.add(friend)
+            }
+        }
+        return childObj
+    }
+
+
+    // 性別の検索条件に対して一致する友達のみを返す
+    fun getSpecificGenderFriends(genderCondistion: String, data: Collection<NCMBObject>): Collection<NCMBObject> {
+        val dataTemp = data
+        // 返り値の配列を設定
+        var specificGenderFriend = mutableListOf<NCMBObject>()
+
+        // 友達リスト内の友達一人一人をチェック
+        for (friend in dataTemp) {
+            // フレンドIDを持つ友達データを取得
+            if (!friend.getJSONObject("friendId").isNull("objectId")) {
+                // 友達の性別を取得
+                val friendGender: String = friend.getString("gender")
+                // 質問属性が”すべて” もしくは友達の性別と同じなら返り値に追加
+                if (genderCondistion == "すべて" || genderCondistion == friendGender) {
+                    specificGenderFriend.add(friend)
+                }
+            }
+        }
+        return specificGenderFriend
+    }
 }
