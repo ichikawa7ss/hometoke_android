@@ -16,33 +16,41 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
-
-    // TODO パーツの適切な配置
-    // TODO オートレイアウト
-    // TODO 質問画像のキャッシュ化
-    // TODO シングルトンを利用して友達一覧を取得
     // TODO 友達画像のキャッシュ化
+    // TODO 質問画像のキャッシュ化
     // TODO 褒めた時にアラートをだす
-    // TODO 友達画像をいい感じにする
     // TODO エラーアラートをだす
+
+    // TODO シングルトンを利用して友達一覧を取得
     // TODO タブの表示方法を調べる
     // TODO ファイルをマージしてそのためのgitに格納する
 
+    // TODO パーツの適切な配置
+    // TODO オートレイアウト
+    // TODO 友達画像をいい感じにする
+
     // DLした質問オブジェクト
-    var dataQuestions = listOf<NCMBObject>()
+    private var dataQuestions = listOf<NCMBObject>()
+    // 質問用画像
+    private var imgQuestions : MutableMap<String,Any?> = mutableMapOf<String,Any?>()
+    // 友達用画像
+    var imgFriends : MutableMap<String,Any?> = mutableMapOf<String,Any?>()
+
+    // 最初の質問画像ID（画像読み込み次第出力）
+    private var firstQImageId : String = ""
 
     // DLしたレシーバーデータ格納用
-    var dataReceivers = listOf<NCMBObject>()
+    private var dataReceivers = listOf<NCMBObject>()
 
     // receiverのID,名前,デバイストークン
-    val objectIds = mutableListOf<String>("","","","")
-    val receiverNames = mutableListOf<String>("","","","")
-    val receiverDeviceTokens = mutableListOf<String>("","","","")
+    private val objectIds = mutableListOf<String>("","","","")
+    private val receiverNames = mutableListOf<String>("","","","")
+    // private val receiverDeviceTokens = mutableListOf<String>("","","","")
 
-    var questionId : String = ""
-    var questionGenderCondition : String = ""
-    var questionTitle : String = ""
-    var questionTempPhrase : String = ""
+    private var questionId : String = ""
+    private var questionGenderCondition : String = ""
+    private var questionTitle : String = ""
+    private var questionTempPhrase : String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         editor.putString("questionId","")
 
         // userInfo.edit().remove("updateFriendsTime").commit()
-        editor.commit()
+        editor.apply()
 
         if (userInfo.getString("updateFriendsTime", null) == null) {
             val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
@@ -81,6 +89,7 @@ class MainActivity : AppCompatActivity() {
         // TODO【ここまで】
 
         updateMFriends()
+        saveFriendCacheData()
 
         allShuffulBtn.setOnClickListener {
             decideQuestion()
@@ -107,73 +116,134 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        decideQuestion()
+        saveQuestionCacheData()
 
     }
 
-    fun decideQuestion() {
+    private fun saveQuestionCacheData () {
+        // 画像取得件数（画像取得割合が80%になったら画像を表示する）
+        var countQ = 1.0
         // 質問の検索・取得
         val query = NCMBQuery<NCMBObject>("m_questions")
-
-        query.whereEqualTo("releaseFlg","1")
-        query.findInBackground { objs, e ->
+        query.whereEqualTo("releaseFlg", "1")
+        query.findInBackground { objs, _ ->
             this.dataQuestions = objs
             val doubleVal: Double = objs.size.toDouble()
             var noRepeat = false
+            for (data in this.dataQuestions) {
+                // NCMBFileを宣言
+                val imageName = data.getString("objectId")
+                val file = NCMBFile("${imageName}.png")
 
-            if (this.dataQuestions.isEmpty()) {
-                Log.w("[WARN]","取得できる質問がありません")
-            } else {
-                val num = (0..(this.dataQuestions.size.toInt() - 1)).random()
-                val objectId = this.dataQuestions[num].objectId
+                // 質問画像をキャッシュへ格納
+                file.fetchInBackground { imgData, eFile ->
+                    if (eFile == null) {
+                        this.imgQuestions[imageName] = imgData
+                        countQ += 1.0
+                        Log.d("[DEBUG]","現在の読み込み件数：${countQ}/${objs.size}")
 
-                // TODO("最初の質問（画像読み込みタイミング）は別でオブジェクトIDを取得しておく")
-                // firstQImageId = objectId!
-
-                questionGenderCondition = objs[num].getString("genderCondition")
-                questionTitle = objs[num].getString("title")
-                questionTempPhrase = objs[num].getString("questionPhrase")
-                questionId = objs[num].objectId
-
-                questionPhrase.text = questionTempPhrase
-                val qImageFileName = questionId
-                val file = NCMBFile("$qImageFileName.png")
-                Log.d("[DEBUG]", this.questionId)
-                file.fetchInBackground { data, eFile ->
-                    if (eFile != null) {
-                        //失敗
-                        questionImage.setImageResource(R.drawable.noquestionimage)
-                        Log.e("[ERROR]", eFile.toString())
-                    } else {
-                        //成功
-                        questionImage.setImageBitmap(BitmapFactory.decodeByteArray(data, 0, data.size))
-                        Log.d("[DEBUG]", "質問画像読み込み成功")
+                        // 質問画像を70%読みこんだらインジケーターを止めて質問画像を表示
+                        if ((countQ/doubleVal >= 0.8) && !noRepeat) {
+                            if (this.imgQuestions[this.firstQImageId] == null) {
+                                // ダミー画像を使用
+                                questionImage.setImageResource(R.drawable.noquestionimage)
+                            } else {
+                                questionImage.setImageBitmap(BitmapFactory.decodeByteArray(imgData, 0, imgData.size))
+                            }
+                            this.questionPhrase.text = "${this.questionTempPhrase}といえば？"
+                            noRepeat = true
+                        }
                     }
                 }
-                // 友達の検索・取得
-                val queryReceiver = NCMBQuery<NCMBObject>("m_users")
-                queryReceiver.findInBackground { objs, eFile ->
-                    if (eFile != null) {
-                        //失敗
-                        Log.e("[ERROR]", eFile.toString())
-                    } else {
-                        //成功
-                        Log.d("[DEBUG]", "友達データ${objs.size}件　読み込み成功")
+            }
+            // 質問選択
+            this.decideQuestion()
+        }
+    }
 
-                        this.dataReceivers = objs
-
-                        displayReceiver(receiverImage0, receiverName0,0)
-                        displayReceiver(receiverImage1,receiverName1,1)
-                        displayReceiver(receiverImage2, receiverName2,2)
-                        displayReceiver(receiverImage3, receiverName3,3)
-
+    private fun saveFriendCacheData() {
+        // sharedPreference を呼び出し
+        val userInfoSP : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+        val queryFriend = NCMBQuery<NCMBObject>("m_friends")
+        queryFriend.whereEqualTo("userId",userInfoSP.getString("objectId", ""))
+        queryFriend.whereEqualTo("blockFlg","0")
+        queryFriend.findInBackground { objs, _ ->
+            dataReceivers = objs
+            // 友達辞書からデータを取得
+            for (data in objs){
+                // 友達IDに子オブジェクトがあれば読み出し
+                val userObjId = data.getJSONObject("friendId").getString("objectId")
+                Log.d("[DEBUG]","${userObjId}の画像を読み込み中")
+                if (userObjId != null) {
+                    // NCMBFileを宣言
+                    val file = NCMBFile("${userObjId}.png")
+                    // 友達画像をキャッシュへ格納
+                    file.fetchInBackground { imgFriecdData, eFile ->
+                        if (eFile == null){
+                            Log.d("[DEBUG]","${userObjId}の画像を保存中")
+                            this.imgFriends[userObjId] = imgFriecdData
+                        } else {
+                            Log.e("[ERROR]","[保存失敗]${userObjId}")
+                        }
                     }
                 }
             }
         }
     }
+
+    private fun decideQuestion() {
+
+        if (this.dataQuestions.isEmpty()) {
+            Log.w("[WARN]","取得できる質問がありません")
+        } else {
+            val num = (0..(this.dataQuestions.size - 1)).random()
+
+            questionGenderCondition = this.dataQuestions[num].getString("genderCondition")
+            questionTitle = this.dataQuestions[num].getString("title")
+            questionTempPhrase = this.dataQuestions[num].getString("questionPhrase")
+            questionId = this.dataQuestions[num].objectId
+            firstQImageId = questionId
+
+            // 新しい質問画像を出す
+            if (this.imgQuestions[questionId] != null) {
+                val img = this.imgQuestions[questionId] as ByteArray
+                questionImage.setImageBitmap(BitmapFactory.decodeByteArray(img, 0, img.size))
+                this.questionPhrase.text = "${this.questionTempPhrase}といえば？"
+                print("getting questions data is successed")
+            } else {
+                //画像が読み込めない場合
+                questionImage.setImageResource(R.drawable.noquestionimage)
+                print("geting questions data is failed")
+            }
+//            // 友達の検索・取得
+//            val queryReceiver = NCMBQuery<NCMBObject>("m_users")
+//            queryReceiver.findInBackground { friendsData, eFile ->
+//                if (eFile != null) {
+//                    //失敗
+//                    Log.e("[ERROR]", eFile.toString())
+//                } else {
+//                    //成功
+//                    Log.d("[DEBUG]", "友達データ${friendsData.size}件　読み込み成功")
+//
+//                    this.dataReceivers = friendsData
+//
+//                    displayReceiver(receiverImage0, receiverName0,0)
+//                    displayReceiver(receiverImage1,receiverName1,1)
+//                    displayReceiver(receiverImage2, receiverName2,2)
+//                    displayReceiver(receiverImage3, receiverName3,3)
+//
+//                }
+//            }
+            displayReceiver(receiverImage0, receiverName0,0)
+            displayReceiver(receiverImage1,receiverName1,1)
+            displayReceiver(receiverImage2, receiverName2,2)
+            displayReceiver(receiverImage3, receiverName3,3)
+
+        }
+
+    }
     
-    fun displayReceiver(receiverImage: ImageView, receiverName:TextView, receiverNum: Int) {
+    private fun displayReceiver(receiverImage: ImageView, receiverName:TextView, receiverNum: Int) {
         // receiverを決めて表示する
         var isDoubling = true
         var countRandom = 0
@@ -186,7 +256,7 @@ class MainActivity : AppCompatActivity() {
                 receiverName.text = "ユーザがいません"
                 return
             }
-            val numRondom = (0..(this.dataReceivers.size.toInt() - 1)).random()
+            val numRondom = (0..(this.dataReceivers.size - 1)).random()
             val objectId = this.dataReceivers[numRondom].objectId
             for (num in 0..receiverNum) {
                 // レシーバー番号の分だけ配列をチェックする
@@ -217,11 +287,10 @@ class MainActivity : AppCompatActivity() {
 //                        receiverDeviceTokens[receiverNum] = ""
 //                    }
 
+                    println(dataReceivers)
                     objectIds[receiverNum] = objectId
                     receiverNames[receiverNum] = receiverNameTemp
-
-                    val friendImageFileName = objectId
-                    val file = NCMBFile("$friendImageFileName.png")
+                    val file = NCMBFile("$objectId.png")
                     file.fetchInBackground { data, eFile ->
                         if (eFile != null) {
                             //失敗
@@ -239,7 +308,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun serveReceiver (receiverNum: Int) {
+    private fun serveReceiver (receiverNum: Int) {
+        val userInfoSP : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         val receiverName : String = receiverNames[receiverNum]
         if (receiverName.isEmpty()) Log.e("[ERROR]", "このメンバーは褒められません") else {
             val displaySrc = "$receiverName さんを「$questionTitle」とホメました"
@@ -250,8 +320,8 @@ class MainActivity : AppCompatActivity() {
             obj.put("questionId", questionId)
             obj.put("readFlg","0" )
             obj.put("questionTitle", this.questionTitle)
-//            obj.put(, "serverId")
-//            obj.put(, "serverTitle")
+            obj.put("serverId",userInfoSP.getString("objectId", ""))
+            obj.put("serverTitle",userInfoSP.getString("registTitle", ""))
             obj.put("receiverId",objectIds[receiverNum] )
             obj.put("questionPhrase",this.questionTempPhrase)
 
@@ -268,7 +338,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun updateMFriends () {
+    private fun updateMFriends () {
         // 更新日付を設定してm_friendsを更新
         // 初期に実施した検索条件とは別
 
@@ -326,7 +396,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun String.toDate(pattern: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"): Date? {
+    private fun String.toDate(pattern: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"): Date? {
         val sdFormat = try {
             SimpleDateFormat(pattern)
         } catch (e: IllegalArgumentException) {
