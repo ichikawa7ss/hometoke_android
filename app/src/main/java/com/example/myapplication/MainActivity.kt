@@ -17,6 +17,17 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+    // TODO パーツの適切な配置
+    // TODO オートレイアウト
+    // TODO 質問画像のキャッシュ化
+    // TODO シングルトンを利用して友達一覧を取得
+    // TODO 友達画像のキャッシュ化
+    // TODO 褒めた時にアラートをだす
+    // TODO 友達画像をいい感じにする
+    // TODO エラーアラートをだす
+    // TODO タブの表示方法を調べる
+    // TODO ファイルをマージしてそのためのgitに格納する
+
     // DLした質問オブジェクト
     var dataQuestions = listOf<NCMBObject>()
 
@@ -61,17 +72,11 @@ class MainActivity : AppCompatActivity() {
 
         // userInfo.edit().remove("updateFriendsTime").commit()
         editor.commit()
-        println(userInfo.getString("userName","noName"))
-        println(userInfo.getString("updateFriendsTime","noInput"))
-        println(userInfo.getString("objectId","noId"))
 
         if (userInfo.getString("updateFriendsTime", null) == null) {
             val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
             editor.putString("updateFriendsTime", df.format(Date()))
             editor.apply()
-            println(userInfo.getString("updateFriendsTime", null))
-        } else {
-            println("すでにupdateFriendsTimeが登録されています")
         }
         // TODO【ここまで】
 
@@ -117,7 +122,7 @@ class MainActivity : AppCompatActivity() {
             var noRepeat = false
 
             if (this.dataQuestions.isEmpty()) {
-                // TODO("取得されなかった場合の動作")
+                Log.w("[WARN]","取得できる質問がありません")
             } else {
                 val num = (0..(this.dataQuestions.size.toInt() - 1)).random()
                 val objectId = this.dataQuestions[num].objectId
@@ -284,16 +289,11 @@ class MainActivity : AppCompatActivity() {
         query.or(arrayListOf(query1,query2,query3) as Collection<NCMBQuery<NCMBBase>>?)
         // AND条件で追加分の友達のみを指定
         query.whereGreaterThan("createDate",userInfoSP.getString("updateFriendsTime", null).toDate())
-        print(userInfoSP.all)
         query.findInBackground { results, e ->
-            println("ニフクラ探索開始")
             // 友達がいた場合, 取得した友達をm_friendsに保存する
             if (results.size > 0) {
-                println("友達がいるよ")
                 for (i in 0..(results.size - 1)) {
-                    print(i)
-                    //自分以外のデータを登録
-                    // TODO IDをpreferenceから抽出
+                    //　自分のデータは登録しない
                     if (results[i].objectId != userInfoSP.getString("objectId", "")) {
                         val obj = NCMBObject("m_friends")
                         obj.put("userId", userInfoSP.getString("objectId", ""))
