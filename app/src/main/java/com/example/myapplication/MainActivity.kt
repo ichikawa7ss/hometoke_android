@@ -1,17 +1,18 @@
 package com.example.myapplication
 
-import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
-import com.nifcloud.mbaas.core.NCMB
-import com.nifcloud.mbaas.core.NCMBFile
-import com.nifcloud.mbaas.core.NCMBObject
-import com.nifcloud.mbaas.core.NCMBQuery
+import com.nifcloud.mbaas.core.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -37,11 +38,44 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        singltonクラスの宣言
+        // singltonクラスの宣言
         FriendData.onCreateApplication(applicationContext)
 
         // NCMB初期化
         NCMB.initialize(applicationContext, "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1", "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7")
+
+        // TODO 【ここから】テスト用userInfoを新規登録画面作成後に消す
+        val userInfo: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+
+        val editor = userInfo.edit()
+        editor.putString("userName","市川しょま")
+        editor.putString("objectId","SOcuIKHKOBVdjKn7")
+        editor.putString("loginFlg","1")
+        editor.putString("gender","男")
+        editor.putString("elementarySchool","あきる野市立東秋留小学校")
+        editor.putString("juniorHighSchool","あきる野市立秋多中学校")
+        editor.putString("highSchool","あきる野市立秋留台高等学校")
+        editor.putString("entryYear","2000")
+        editor.putString("registTitle","ホメ界の新星")
+        editor.putString("questionId","")
+
+        // userInfo.edit().remove("updateFriendsTime").commit()
+        editor.commit()
+        println(userInfo.getString("userName","noName"))
+        println(userInfo.getString("updateFriendsTime","noInput"))
+        println(userInfo.getString("objectId","noId"))
+
+        if (userInfo.getString("updateFriendsTime", null) == null) {
+            val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+            editor.putString("updateFriendsTime", df.format(Date()))
+            editor.apply()
+            println(userInfo.getString("updateFriendsTime", null))
+        } else {
+            println("すでにupdateFriendsTimeが登録されています")
+        }
+        // TODO【ここまで】
+
+        updateMFriends()
 
         allShuffulBtn.setOnClickListener {
             decideQuestion()
@@ -83,12 +117,12 @@ class MainActivity : AppCompatActivity() {
             var noRepeat = false
 
             if (this.dataQuestions.isEmpty()) {
-                //TODO("取得されなかった場合の動作")
+                // TODO("取得されなかった場合の動作")
             } else {
                 val num = (0..(this.dataQuestions.size.toInt() - 1)).random()
                 val objectId = this.dataQuestions[num].objectId
 
-                //TODO("最初の質問（画像読み込みタイミング）は別でオブジェクトIDを取得しておく")
+                // TODO("最初の質問（画像読み込みタイミング）は別でオブジェクトIDを取得しておく")
                 // firstQImageId = objectId!
 
                 questionGenderCondition = objs[num].getString("genderCondition")
@@ -104,19 +138,19 @@ class MainActivity : AppCompatActivity() {
                     if (eFile != null) {
                         //失敗
                         questionImage.setImageResource(R.drawable.noquestionimage)
-                        Log.d("[ERROR]", eFile.toString())
+                        Log.e("[ERROR]", eFile.toString())
                     } else {
                         //成功
                         questionImage.setImageBitmap(BitmapFactory.decodeByteArray(data, 0, data.size))
                         Log.d("[DEBUG]", "質問画像読み込み成功")
                     }
                 }
-                // 質問の検索・取得
+                // 友達の検索・取得
                 val queryReceiver = NCMBQuery<NCMBObject>("m_users")
                 queryReceiver.findInBackground { objs, eFile ->
                     if (eFile != null) {
                         //失敗
-                        Log.d("[ERROR]", eFile.toString())
+                        Log.e("[ERROR]", eFile.toString())
                     } else {
                         //成功
                         Log.d("[DEBUG]", "友達データ${objs.size}件　読み込み成功")
@@ -187,7 +221,7 @@ class MainActivity : AppCompatActivity() {
                         if (eFile != null) {
                             //失敗
                             receiverImage.setImageResource(R.drawable.noimage)
-                            Log.d("[ERROR]", eFile.toString())
+                            Log.e("[ERROR]", eFile.toString())
                         } else {
                             //成功
                             receiverImage.setImageBitmap(BitmapFactory.decodeByteArray(data, 0, data.size))
@@ -202,7 +236,7 @@ class MainActivity : AppCompatActivity() {
 
     fun serveReceiver (receiverNum: Int) {
         val receiverName : String = receiverNames[receiverNum]
-        if (receiverName.isEmpty()) Log.d("[ERROR]", "このメンバーは褒められません") else {
+        if (receiverName.isEmpty()) Log.e("[ERROR]", "このメンバーは褒められません") else {
             val displaySrc = "$receiverName さんを「$questionTitle」とホメました"
 
             // ホメるテーブル格納用のNCMBObjectを作成
@@ -220,13 +254,92 @@ class MainActivity : AppCompatActivity() {
             obj.saveInBackground{ error ->
                 if (error != null) {
                     // 失敗
-                    Log.d("[ERROR]", error.toString())
+                    Log.e("[ERROR]", error.toString())
                 } else {
                     Log.d("[DEBUG]", obj.toString())
                     Log.d("[DEBUG]", "e_serveデータ保存成功")
                 }
             }
         }
+    }
+
+    fun updateMFriends () {
+        // 更新日付を設定してm_friendsを更新
+        // 初期に実施した検索条件とは別
+
+        // 学校が一致する友達をqueryで取得する
+        // sharedPreference を呼び出し
+        val userInfoSP : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+
+        val query1 = NCMBQuery<NCMBObject>("m_users")
+        query1.whereEqualTo("elementarySchool","あきる野市立東秋留小学校")
+        query1.whereEqualTo("entryYear", userInfoSP.getString("entryYear", ""))
+        val query2 = NCMBQuery<NCMBObject>("m_users")
+        query2.whereEqualTo("juniorHighSchool","あきる野市立秋多中学校")
+        query2.whereEqualTo("entryYear", userInfoSP.getString("entryYear", ""))
+        val query3 = NCMBQuery<NCMBObject>("m_users")
+        query3.whereEqualTo("highSchool","あきる野市立秋留台高等学校")
+        query3.whereEqualTo("entryYear", userInfoSP.getString("entryYear", ""))
+        val query = NCMBQuery<NCMBObject>("m_users")
+        query.or(arrayListOf(query1,query2,query3) as Collection<NCMBQuery<NCMBBase>>?)
+        // AND条件で追加分の友達のみを指定
+        query.whereGreaterThan("createDate",userInfoSP.getString("updateFriendsTime", null).toDate())
+        print(userInfoSP.all)
+        query.findInBackground { results, e ->
+            println("ニフクラ探索開始")
+            // 友達がいた場合, 取得した友達をm_friendsに保存する
+            if (results.size > 0) {
+                println("友達がいるよ")
+                for (i in 0..(results.size - 1)) {
+                    print(i)
+                    //自分以外のデータを登録
+                    // TODO IDをpreferenceから抽出
+                    if (results[i].objectId != userInfoSP.getString("objectId", "")) {
+                        val obj = NCMBObject("m_friends")
+                        obj.put("userId", userInfoSP.getString("objectId", ""))
+                        obj.put("friendId", results[i])
+                        obj.put("blockFlg", "0")
+                        obj.saveInBackground { error ->
+                            if (error == null) {
+                                // sharedPreferenceの友達更新日時を更新
+                                val editor = userInfoSP.edit()
+                                val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+                                editor.putString("updateFriendsTime", df.format(Date()))
+                                editor.apply()
+                                Log.d("[DEBUG]", "更新日付：${Date()} ,「${results[i].getString("userName")}」を友達追加")
+
+                            } else {
+                                // 保存に失敗した場合の処理
+                                Log.e("[ERROR]", "友達が保存できませんでした")
+                                Log.e("[ERROR]", error.toString())
+                            }
+                        }
+                    }
+                }
+            } else if (e == null){
+                // 異常なエラーがなければ
+                Log.d("[DEBUG]", "追加する友人がいません。アプリを広めましょう")
+            } else {
+                Log.e("[ERROR]", "ニフクラへのアクセスに失敗")
+                Log.e("[ERROR]", e.toString())
+            }
+        }
+    }
+
+    fun String.toDate(pattern: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"): Date? {
+        val sdFormat = try {
+            SimpleDateFormat(pattern)
+        } catch (e: IllegalArgumentException) {
+            null
+        }
+        val date = sdFormat?.let {
+            try {
+                it.parse(this)
+            } catch (e: ParseException){
+                null
+            }
+        }
+        return date
     }
 }
 

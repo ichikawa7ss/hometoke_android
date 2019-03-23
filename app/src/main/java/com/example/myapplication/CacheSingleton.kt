@@ -8,6 +8,7 @@ import com.nifcloud.mbaas.core.NCMBObject
 class FriendData private constructor(context: Context) {
     var friendList = mutableListOf<NCMBObject>()
 
+    // kotlinでのシングルトンの実装が以下らしい
     companion object {
         private var _instance: FriendData? = null
 
