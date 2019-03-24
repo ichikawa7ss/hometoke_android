@@ -39,7 +39,8 @@ class MainActivity : AppCompatActivity() {
     private var firstQImageId : String = ""
 
     // m_friendsから取得したレシーバーデータ格納用
-    private var dataFriendData = listOf<NCMBObject>()
+    private var dataFriend = listOf<NCMBObject>()
+    private var specificGenderFriend = listOf<NCMBObject>()
 
     // receiverのID,名前,デバイストークン
     private val objectIds = mutableListOf<String>("","","","")
@@ -171,14 +172,14 @@ class MainActivity : AppCompatActivity() {
         queryFriend.whereEqualTo("blockFlg","0")
         queryFriend.setIncludeKey("friendId");
         queryFriend.findInBackground { objs, _ ->
-            this.dataFriendData = objs
+            this.dataFriend = objs
         }
     }
 
     private fun saveFriendCacheData() {
 
         // 友達辞書からデータを取得
-        for (data in dataFriendData){
+        for (data in dataFriend){
             // 友達IDに子オブジェクトがあれば読み出し
             val userObjId = data.getJSONObject("friendId").getString("objectId")
             Log.d("[DEBUG]","${userObjId}の画像を読み込み中")
@@ -217,12 +218,21 @@ class MainActivity : AppCompatActivity() {
                 val img = this.imgQuestions[questionId] as ByteArray
                 questionImage.setImageBitmap(BitmapFactory.decodeByteArray(img, 0, img.size))
                 this.questionPhrase.text = "${this.questionTempPhrase}といえば？"
-                print("getting questions data is successed")
+                println("getting questions data is successed")
             } else {
                 //画像が読み込めない場合
                 questionImage.setImageResource(R.drawable.noquestionimage)
-                print("geting questions data is failed")
+                println("geting questions data is failed")
             }
+            println("質問の性別条件：${questionGenderCondition}")
+            if ( "男".equals(questionGenderCondition) ||("女".equals(questionGenderCondition)) ) {
+                specificGenderFriend = dataFriend.filter {
+                    it.getJSONObject("friendId").getString("gender") == questionGenderCondition
+                }
+            } else {
+                specificGenderFriend = dataFriend
+            }
+
             displayReceiver(receiverImage0, receiverName0,0)
             displayReceiver(receiverImage1,receiverName1,1)
             displayReceiver(receiverImage2, receiverName2,2)
@@ -231,20 +241,21 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun displayReceiver(receiverImage: ImageView, receiverName:TextView, receiverNum: Int) {
+
         // receiverを決めて表示する
         var isDoubling = true
         var countRandom = 0
         while (isDoubling && countRandom < 20) {
             // isDoublingがtrue->被りあり->乱数発生、レシーバー表示を被りがなくなるまで繰り返す
             // 乱数をふる
-            if (this.dataFriendData.isEmpty()) {
+            if (this.specificGenderFriend.isEmpty()) {
                 // すべての画像をユーザなしに設定
                 receiverImage.setImageResource(R.drawable.noimage)
                 receiverName.text = "ユーザがいません"
                 return
             }
-            val numRondom = (0..(this.dataFriendData.size - 1)).random()
-            val objectId = this.dataFriendData[numRondom].getJSONObject("friendId").getString("objectId")
+            val numRondom = (0..(this.specificGenderFriend.size - 1)).random()
+            val objectId = this.specificGenderFriend[numRondom].getJSONObject("friendId").getString("objectId")
             for (num in 0..receiverNum) {
                 // レシーバー番号の分だけ配列をチェックする
                 if(objectIds[num] == objectId) {
@@ -261,7 +272,7 @@ class MainActivity : AppCompatActivity() {
                     isDoubling = false
 
                     // 新しいレシーバーラベルを出す
-                    val receiverNameTemp = this.dataFriendData[numRondom].getJSONObject("friendId").getString("userName")
+                    val receiverNameTemp = this.specificGenderFriend[numRondom].getJSONObject("friendId").getString("userName")
                     receiverName.text = receiverNameTemp
 
                     // TODO("レシーバーのデバイストークンを取得")
@@ -391,6 +402,18 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return date
+    }
+
+    fun getSpecificGenderFriends (genderCondistion : String)  {
+        // 友達リスト内の友達一人一人をチェック
+        for (friend in dataFriend) {
+            // 友達の性別を取得
+            val friendGender = friend.getString("gender")
+            // 質問属性が”すべて” もしくは友達の性別と同じなら返り値に追加
+            if (genderCondistion == "すべて" || genderCondistion == friendGender) {
+                //specificGenderFriend.
+            }
+        }
     }
 }
 
