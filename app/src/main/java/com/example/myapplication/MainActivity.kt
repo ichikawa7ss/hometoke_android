@@ -13,15 +13,14 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import android.widget.Toast
+
+
 
 
 class MainActivity : AppCompatActivity() {
-    // TODO 友達画像のキャッシュ化
-    // TODO 質問画像のキャッシュ化
-    // TODO 褒めた時にアラートをだす
-    // TODO エラーアラートをだす
+    // TODO 質問に対する性別の条件を反映させる
 
-    // TODO シングルトンを利用して友達一覧を取得
     // TODO タブの表示方法を調べる
     // TODO ファイルをマージしてそのためのgitに格納する
 
@@ -34,13 +33,13 @@ class MainActivity : AppCompatActivity() {
     // 質問用画像
     private var imgQuestions : MutableMap<String,Any?> = mutableMapOf<String,Any?>()
     // 友達用画像
-    var imgFriends : MutableMap<String,Any?> = mutableMapOf<String,Any?>()
+    private var imgFriends : MutableMap<String,Any?> = mutableMapOf<String,Any?>()
 
     // 最初の質問画像ID（画像読み込み次第出力）
     private var firstQImageId : String = ""
 
-    // DLしたレシーバーデータ格納用
-    private var dataReceivers = listOf<NCMBObject>()
+    // m_friendsから取得したレシーバーデータ格納用
+    private var dataFriendData = listOf<NCMBObject>()
 
     // receiverのID,名前,デバイストークン
     private val objectIds = mutableListOf<String>("","","","")
@@ -89,7 +88,8 @@ class MainActivity : AppCompatActivity() {
         // TODO【ここまで】
 
         updateMFriends()
-        saveFriendCacheData()
+        saveFriendData()
+
 
         allShuffulBtn.setOnClickListener {
             decideQuestion()
@@ -156,35 +156,43 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+            // 友達をキャッシュデータに保管
+            this.saveFriendCacheData()
+
             // 質問選択
             this.decideQuestion()
         }
     }
 
-    private fun saveFriendCacheData() {
-        // sharedPreference を呼び出し
+    private fun saveFriendData () {
         val userInfoSP : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         val queryFriend = NCMBQuery<NCMBObject>("m_friends")
         queryFriend.whereEqualTo("userId",userInfoSP.getString("objectId", ""))
         queryFriend.whereEqualTo("blockFlg","0")
+        queryFriend.setIncludeKey("friendId");
         queryFriend.findInBackground { objs, _ ->
-            dataReceivers = objs
-            // 友達辞書からデータを取得
-            for (data in objs){
-                // 友達IDに子オブジェクトがあれば読み出し
-                val userObjId = data.getJSONObject("friendId").getString("objectId")
-                Log.d("[DEBUG]","${userObjId}の画像を読み込み中")
-                if (userObjId != null) {
-                    // NCMBFileを宣言
-                    val file = NCMBFile("${userObjId}.png")
-                    // 友達画像をキャッシュへ格納
-                    file.fetchInBackground { imgFriecdData, eFile ->
-                        if (eFile == null){
-                            Log.d("[DEBUG]","${userObjId}の画像を保存中")
-                            this.imgFriends[userObjId] = imgFriecdData
-                        } else {
-                            Log.e("[ERROR]","[保存失敗]${userObjId}")
-                        }
+            this.dataFriendData = objs
+        }
+    }
+
+    private fun saveFriendCacheData() {
+
+        // 友達辞書からデータを取得
+        for (data in dataFriendData){
+            // 友達IDに子オブジェクトがあれば読み出し
+            val userObjId = data.getJSONObject("friendId").getString("objectId")
+            Log.d("[DEBUG]","${userObjId}の画像を読み込み中")
+            if (userObjId != null) {
+                // NCMBFileを宣言
+                val file = NCMBFile("${userObjId}.png")
+                // 友達画像をキャッシュへ格納
+                file.fetchInBackground { imgFriecdData, eFile ->
+                    if (eFile == null){
+                        Log.d("[DEBUG]","${userObjId}の画像を保存中")
+                        this.imgFriends[userObjId] = imgFriecdData
+                    } else {
+                        Log.e("[ERROR]",eFile.toString())
+                        Log.e("[ERROR]","[保存失敗]${userObjId}")
                     }
                 }
             }
@@ -215,32 +223,11 @@ class MainActivity : AppCompatActivity() {
                 questionImage.setImageResource(R.drawable.noquestionimage)
                 print("geting questions data is failed")
             }
-//            // 友達の検索・取得
-//            val queryReceiver = NCMBQuery<NCMBObject>("m_users")
-//            queryReceiver.findInBackground { friendsData, eFile ->
-//                if (eFile != null) {
-//                    //失敗
-//                    Log.e("[ERROR]", eFile.toString())
-//                } else {
-//                    //成功
-//                    Log.d("[DEBUG]", "友達データ${friendsData.size}件　読み込み成功")
-//
-//                    this.dataReceivers = friendsData
-//
-//                    displayReceiver(receiverImage0, receiverName0,0)
-//                    displayReceiver(receiverImage1,receiverName1,1)
-//                    displayReceiver(receiverImage2, receiverName2,2)
-//                    displayReceiver(receiverImage3, receiverName3,3)
-//
-//                }
-//            }
             displayReceiver(receiverImage0, receiverName0,0)
             displayReceiver(receiverImage1,receiverName1,1)
             displayReceiver(receiverImage2, receiverName2,2)
             displayReceiver(receiverImage3, receiverName3,3)
-
         }
-
     }
     
     private fun displayReceiver(receiverImage: ImageView, receiverName:TextView, receiverNum: Int) {
@@ -250,14 +237,14 @@ class MainActivity : AppCompatActivity() {
         while (isDoubling && countRandom < 20) {
             // isDoublingがtrue->被りあり->乱数発生、レシーバー表示を被りがなくなるまで繰り返す
             // 乱数をふる
-            if (this.dataReceivers.isEmpty()) {
+            if (this.dataFriendData.isEmpty()) {
                 // すべての画像をユーザなしに設定
                 receiverImage.setImageResource(R.drawable.noimage)
                 receiverName.text = "ユーザがいません"
                 return
             }
-            val numRondom = (0..(this.dataReceivers.size - 1)).random()
-            val objectId = this.dataReceivers[numRondom].objectId
+            val numRondom = (0..(this.dataFriendData.size - 1)).random()
+            val objectId = this.dataFriendData[numRondom].getJSONObject("friendId").getString("objectId")
             for (num in 0..receiverNum) {
                 // レシーバー番号の分だけ配列をチェックする
                 if(objectIds[num] == objectId) {
@@ -272,36 +259,26 @@ class MainActivity : AppCompatActivity() {
                 } else if (num == receiverNum) {
                     // 被りなし　&& 最後の試行の時にレシーバーを表示
                     isDoubling = false
+
                     // 新しいレシーバーラベルを出す
-                    val receiverNameTemp = this.dataReceivers[numRondom].getString("userName")
+                    val receiverNameTemp = this.dataFriendData[numRondom].getJSONObject("friendId").getString("userName")
                     receiverName.text = receiverNameTemp
 
                     // TODO("レシーバーのデバイストークンを取得")
-//                    // レシーバーのデバイストークンを取得
-//                    if (this.dataReceivers[numRondom].getString( "deviceToken") != null) {
-//                        // デバイストークンがnilじゃなければ
-//                        receiverDeviceTokens[receiverNum] = receiverDeviceToken as! String
-//                    } else {
-//                        // nilなら
-//                        print("deviceToken is nothing")
-//                        receiverDeviceTokens[receiverNum] = ""
-//                    }
 
-                    println(dataReceivers)
                     objectIds[receiverNum] = objectId
                     receiverNames[receiverNum] = receiverNameTemp
-                    val file = NCMBFile("$objectId.png")
-                    file.fetchInBackground { data, eFile ->
-                        if (eFile != null) {
-                            //失敗
-                            receiverImage.setImageResource(R.drawable.noimage)
-                            Log.e("[ERROR]", eFile.toString())
-                        } else {
-                            //成功
-                            receiverImage.setImageBitmap(BitmapFactory.decodeByteArray(data, 0, data.size))
-                            Log.d("[DEBUG]", data.toString())
-                            Log.d("[DEBUG]", "友達画像読み込み成功")
-                        }
+
+                    if (this.imgFriends[objectId] != null) {
+                        //成功
+                        val imgData =  this.imgFriends[objectId] as ByteArray
+                        receiverImage.setImageBitmap(BitmapFactory.decodeByteArray(imgData, 0, imgData.size))
+                        Log.d("[DEBUG]", imgData.toString())
+                        Log.d("[DEBUG]", "友達画像読み込み成功")
+                    } else {
+                        //画像が読み込めない場合
+                        receiverImage.setImageResource(R.drawable.noimage)
+                        Log.e("[ERROR]","友達画像読み込み失敗")
                     }
                 }
             }
@@ -311,9 +288,10 @@ class MainActivity : AppCompatActivity() {
     private fun serveReceiver (receiverNum: Int) {
         val userInfoSP : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         val receiverName : String = receiverNames[receiverNum]
-        if (receiverName.isEmpty()) Log.e("[ERROR]", "このメンバーは褒められません") else {
-            val displaySrc = "$receiverName さんを「$questionTitle」とホメました"
-
+        if (receiverName.isEmpty()) {
+            val toast = Toast.makeText(this@MainActivity, "このメンバーはホメられません", Toast.LENGTH_LONG)
+            toast.show()
+        } else {
             // ホメるテーブル格納用のNCMBObjectを作成
             val obj = NCMBObject("e_serve")
             // ホメるテーブルのカラムに値を設定
@@ -333,6 +311,9 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     Log.d("[DEBUG]", obj.toString())
                     Log.d("[DEBUG]", "e_serveデータ保存成功")
+                    val toast = Toast.makeText(this@MainActivity, "${receiverName}さんを${questionTitle}とホメました！", Toast.LENGTH_LONG)
+                    toast.show()
+                    decideQuestion()
                 }
             }
         }
