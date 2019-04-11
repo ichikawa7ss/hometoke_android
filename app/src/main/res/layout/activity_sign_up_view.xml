@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".SignUpView">
+
+    <EditText
+            android:layout_height="39dp"
+            android:inputType="textPersonName"
+            android:text="Name"
+            android:ems="10"
+            tools:layout_editor_absoluteY="69dp" tools:layout_editor_absoluteX="24dp" android:id="@+id/name"
+            android:layout_width="371dp"/>
+    <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" tools:layout_editor_absoluteY="142dp"
+            tools:layout_editor_absoluteX="40dp"/>
+    <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" tools:layout_editor_absoluteY="124dp"
+            tools:layout_editor_absoluteX="101dp"/>
+    <RadioGroup
+            android:layout_width="180dp"
+            android:layout_height="84dp" tools:layout_editor_absoluteY="120dp"
+            tools:layout_editor_absoluteX="110dp">
+        <RadioButton
+                android:text="男性"
+                android:layout_width="138dp"
+                android:layout_height="wrap_content" android:id="@+id/men" android:layout_weight="1"/>
+        <RadioButton
+                android:text="女性"
+                android:layout_width="138dp"
+                android:layout_height="wrap_content" android:id="@+id/women" android:layout_weight="1"/>
+        <RadioButton
+                android:text="その他"
+                android:layout_width="138dp"
+                android:layout_height="wrap_content" android:id="@+id/none" android:layout_weight="1"/>
+    </RadioGroup>
+    <EditText
+            android:layout_width="90dp"
+            android:layout_height="40dp"
+            android:inputType="textPersonName"
+            android:text="年"
+            android:ems="10"
+            tools:layout_editor_absoluteY="222dp" tools:layout_editor_absoluteX="16dp" android:id="@+id/birthYear"/>
+    <EditText
+            android:layout_width="90dp"
+            android:layout_height="40dp"
+            android:inputType="textPersonName"
+            android:text="年"
+            android:ems="10"
+            tools:layout_editor_absoluteY="222dp" tools:layout_editor_absoluteX="16dp" android:id="@+id/birthYear2"/>
+    <EditText
+            android:layout_width="89dp"
+            android:layout_height="41dp"
+            android:inputType="textPersonName"
+            android:text="月"
+            android:ems="10"
+            tools:layout_editor_absoluteY="220dp" tools:layout_editor_absoluteX="120dp" android:id="@+id/birthMonth"/>
+    <EditText
+            android:layout_width="144dp"
+            android:layout_height="41dp"
+            android:inputType="textPersonName"
+            android:text="日"
+            android:ems="10"
+            tools:layout_editor_absoluteY="220dp" android:id="@+id/birthDay"
+            app:layout_constraintStart_toEndOf="@+id/birthMonth" android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"/>
+    <EditText
+            android:layout_width="365dp"
+            android:layout_height="39dp"
+            android:inputType="textPersonName"
+            android:text="メールアドレス"
+            android:ems="10"
+            tools:layout_editor_absoluteY="278dp" tools:layout_editor_absoluteX="22dp" android:id="@+id/mailAddress"/>
+    <EditText
+            android:layout_width="365dp"
+            android:layout_height="39dp"
+            android:inputType="textPersonName"
+            android:text="パスワード"
+            android:ems="10"
+            tools:layout_editor_absoluteY="334dp" tools:layout_editor_absoluteX="22dp" android:id="@+id/password"/>
+    <EditText
+            android:layout_width="367dp"
+            android:layout_height="45dp"
+            android:inputType="textPersonName"
+            android:text="パスワード(確認)"
+            android:ems="10"
+            tools:layout_editor_absoluteY="390dp" tools:layout_editor_absoluteX="22dp" android:id="@+id/password2"/>
+    <Button
+            android:text="次へ"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" tools:layout_editor_absoluteY="465dp"
+            tools:layout_editor_absoluteX="161dp" android:id="@+id/MoveRegisterSchoolsView"/>
+</android.support.constraint.ConstraintLayout>
