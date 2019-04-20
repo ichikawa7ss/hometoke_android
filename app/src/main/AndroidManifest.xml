@@ -11,6 +11,13 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+        <activity android:name=".Confirmation">
+        </activity>
+        <activity
+                android:name=".IFcheckView"
+                android:label="@string/title_activity_ifcheck_view"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity android:name=".SignUpView">
         </activity>
         <activity android:name=".MainActivity">

@@ -15,6 +15,24 @@ class startPageTest : AppCompatActivity() {
             val intent = Intent(this, SignUpView::class.java)
             startActivity(intent)
         }
+
+        MoveToConfirmationBtn.setOnClickListener {
+            val intent = Intent(this, Confirmation::class.java)
+            intent.putExtra("userNm", "サンプル御名前")
+            intent.putExtra("userSex", "男")
+            intent.putExtra("userbirthYear", "2000")
+            intent.putExtra("userbirthMonth", "4")
+            intent.putExtra("userbirthDay", "2")
+            intent.putExtra("elementalySchoolEntryYear", "2007")
+            intent.putExtra("juniorHighSchoolEntryYear", "2013")
+            intent.putExtra("highSchoolEntryYear", "2016")
+            intent.putExtra("elementarySchool", "川崎市立井田小学校")
+            intent.putExtra("juniorHighSchool", "川崎市立井田小中学校")
+            intent.putExtra("highSchool", "神奈川県立多摩高等学校")
+            intent.putExtra("mailAddress", "sample@gmail.com")
+
+            startActivity(intent)
+        }
     }
 
 
