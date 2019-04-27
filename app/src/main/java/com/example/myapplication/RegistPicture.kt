@@ -14,6 +14,12 @@ import android.util.Log
 import android.Manifest
 import android.app.Activity
 import android.graphics.Bitmap
+import com.nifcloud.mbaas.core.NCMB
+import com.nifcloud.mbaas.core.NCMBFile
+import com.nifcloud.mbaas.core.NCMBAcl
+import android.R.attr.data
+import android.support.v4.app.NotificationCompat.getExtras
+import java.io.ByteArrayOutputStream
 
 
 class RegistPicture : AppCompatActivity() {
@@ -30,6 +36,11 @@ class RegistPicture : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_regist_picture)
+
+        // ニフクラ
+        NCMB.initialize( applicationContext,
+            "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1",
+            "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7");
 
         // 初期画像の設定
         Picasso.with(this).load(url)
@@ -75,7 +86,31 @@ class RegistPicture : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val image = data?.extras?.get("data")?.let {
-                profileImage.setImageBitmap(it as Bitmap)
+                // 画像をニフクラへ保存
+
+                // 画像の変換
+                val bp = it as Bitmap
+                val byteArrayStream = ByteArrayOutputStream()
+                bp.compress(Bitmap.CompressFormat.PNG, 0, byteArrayStream)
+                val dataByte = byteArrayStream.toByteArray()
+
+                //ACL 読み込み:可 , 書き込み:可
+                val acl = NCMBAcl()
+                acl.publicReadAccess = true
+                acl.publicWriteAccess = true
+
+                // 登録するファイル情報
+                val file : NCMBFile = NCMBFile("test.png", dataByte, acl);
+                file.saveInBackground() { e ->
+                    if (e != null) {
+                        // エラー時の処理
+                        Log.d("[DEBUG]", "画像の登録に失敗しました")
+                    } else {
+                        // 登録成功時の処理
+                        Log.d("[DEBUG]", "画像の登録に成功")
+                    }
+
+                }
             }
         }
     }
