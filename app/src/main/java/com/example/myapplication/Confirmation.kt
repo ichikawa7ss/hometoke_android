@@ -1,24 +1,32 @@
 package com.example.myapplication
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import com.nifcloud.mbaas.core.NCMBObject
-import com.nifcloud.mbaas.core.NCMB
-import kotlinx.android.synthetic.main.activity_confirmation.*
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import com.nifcloud.mbaas.core.NCMBException
+import com.nifcloud.mbaas.core.NCMB
+import com.nifcloud.mbaas.core.NCMBObject
+import kotlinx.android.synthetic.main.activity_confirmation.*
+import com.nifcloud.mbaas.core.NCMBUser
+import com.nifcloud.mbaas.core.NCMBQuery
+import com.nifcloud.mbaas.core.NCMBBase
+import java.util.Arrays
 
 class Confirmation : AppCompatActivity() {
 
     // 登録されたユーザのオブジェクトID
     private var objectId : String = ""
+    private var password : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_confirmation)
 
         // 初期化
-        NCMB.initialize(applicationContext,"1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1", "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7")
+        NCMB.initialize(
+            applicationContext,
+            "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1",
+            "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7"
+        )
 
         // 前画面からのデータ受け取り
         userNm.text = intent.getStringExtra("userNm")
@@ -33,24 +41,18 @@ class Confirmation : AppCompatActivity() {
         juniorHighSchoolEntryYear.text = intent.getStringExtra("juniorHighSchoolEntryYear")
         highSchoolEntryYear.text = intent.getStringExtra("highSchoolEntryYear")
         mailAddress.text = intent.getStringExtra("mailAddress")
+        this.password = intent.getStringExtra("password")
 
-        // 完了ボタン押下時
+        // 完了ボタン押下
         CompleteBtn.setOnClickListener() {
-            try {
-                registM_users() /* TODO 非同期で実装する ⭐️*/
-                registE_serveFirst() /* TODO 非同期で実装する ⭐️*/
-                registAccountMng()
-                registM_friends()
-                saveSharedPrefarence()
-                moveToTutorialView()
-            } catch (e : NCMBException) {
-                Log.d("[DEBUG]", "catchしますた")
-            }
+            registM_users()
+            registAccountMng()
+            registM_friends()
         }
     }
 
     // m_userへの登録
-    private fun registM_users () {
+    private fun registM_users() {
 
         // ユーザテーブル格納用のNCMBObjectを作成
         val obj = NCMBObject("m_users")
@@ -64,8 +66,8 @@ class Confirmation : AppCompatActivity() {
         obj.put("entryYear", elementarySchoolEntryYear.text.toString())
         obj.put("gender", userSex.text.toString())
         obj.put("highSchool", HighSchool.text.toString())
-        obj.put("juniorHighSchool", juniorHighSchoolEntryYear.text.toString())
-        obj.put("loginFlg", "1")
+        obj.put("juniorHighSchool", JuniorHighSchool.text.toString())
+        obj.put("LoginFlg", "1")
         obj.put("mailAddress", mailAddress.text.toString())
         obj.put("registTitle", "ホメ界の新星")
         obj.put("userName", userNm.text.toString())
@@ -78,17 +80,18 @@ class Confirmation : AppCompatActivity() {
                 throw e
             } else {
                 // 保存に成功した場合の処理
-                Log.d("[DEBUG]", "保存成功")
+                Log.d("[DEBUG]", "保存成功　ユーザー")
                 Log.d("[DEBUG]", obj.toString())
                 // objectIdを取得
                 this.objectId = obj.objectId
+                // 初回のホメの登録
+                registE_serveFirst()
             }
         }
-
     }
 
     // 初回のホメの登録
-    private fun registE_serveFirst () {
+    private fun registE_serveFirst() {
 
         // e_serveテーブル格納用のNCMBObjectを作成
         val obj = NCMBObject("e_serve")
@@ -110,7 +113,7 @@ class Confirmation : AppCompatActivity() {
                 throw e
             } else {
                 // 保存に成功した場合の処理
-                Log.d("[DEBUG]", "保存成功")
+                Log.d("[DEBUG]", "保存成功　メッセ")
                 Log.d("[DEBUG]", obj.toString())
             }
         }
@@ -118,22 +121,66 @@ class Confirmation : AppCompatActivity() {
     }
 
     // 会員管理への登録
-    private fun registAccountMng () {
+    private fun registAccountMng() {
+        // 会員管理登録用のオブジェクト
+        val user = NCMBUser()
+        // 会員管理への登録情報
+        user.userName = userNm.text.toString()
+        user.setPassword(this.password)
+        user.mailAddress = mailAddress.text.toString()
 
+        user.saveInBackground { e ->
+            if (e != null) {
+                // 保存に失敗した場合の処理
+                Log.d("[Error]", e.toString())
+                throw e
+            } else {
+                // 保存に成功した場合の処理
+                Log.d("[DEBUG]", "保存成功　会員管理")
+                Log.d("[DEBUG]", user.toString())
+            }
+        }
     }
 
     // 友達を登録する
-    private fun registM_friends () {
+    private fun registM_friends() {
+        // ユーザマスタを検索
+        val query = NCMBQuery<NCMBObject>("m_users")
+        val query1 = NCMBQuery<NCMBObject>("m_users")
+        val query2 = NCMBQuery<NCMBObject>("m_users")
+        val query3 = NCMBQuery<NCMBObject>("m_users")
 
+        // 検索条件の設定
+        query1.whereEqualTo("elementarySchool", ElementarySchool.text.toString())
+        query1.whereEqualTo("entryYear", elementarySchoolEntryYear.text.toString())
+
+        query2.whereEqualTo("juniorHighSchool", JuniorHighSchool.text.toString())
+        query2.whereEqualTo("entryYear", elementarySchoolEntryYear.text.toString())
+
+        query3.whereEqualTo("highSchool", HighSchool.text.toString())
+        query3.whereEqualTo("entryYear", elementarySchoolEntryYear.text.toString())
+
+        query.or(Arrays.asList(query1, query2, query3) as Collection<NCMBQuery<NCMBBase>>?)
+
+        // 検索の実行
+        query.findInBackground { objects, e ->
+            if (e != null){
+                // 検索失敗時の処理
+                Log.d("[DEBUG]", e.message)
+            } else {
+                // 検索成功時に友達マスタを登録する
+                Log.d("[DEBUG]", "保存成功")
+            }
+        }
     }
 
     // SharedPrefarenceへの登録
-    private fun saveSharedPrefarence(){
+    private fun saveSharedPrefarence() {
 
     }
 
     // 次画面遷移
-    private fun moveToTutorialView () {
+    private fun moveToTutorialView() {
 
     }
 }

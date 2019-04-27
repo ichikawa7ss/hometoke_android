@@ -30,7 +30,13 @@ class startPageTest : AppCompatActivity() {
             intent.putExtra("juniorHighSchool", "川崎市立井田小中学校")
             intent.putExtra("highSchool", "神奈川県立多摩高等学校")
             intent.putExtra("mailAddress", "sample@gmail.com")
+            intent.putExtra("password", "sample")
 
+            startActivity(intent)
+        }
+
+        MoveToMainActivity.setOnClickListener() {
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
     }
