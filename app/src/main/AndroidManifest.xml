@@ -11,6 +11,8 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+        <activity android:name=".RegistPicture">
+        </activity>
         <activity android:name=".tutorialPageMock">
         </activity>
         <activity android:name=".Confirmation">

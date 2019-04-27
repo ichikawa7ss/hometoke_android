@@ -18,4 +18,8 @@
             android:text="MoveToMainActivity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" android:id="@+id/MoveToMainActivity"/>
+    <Button
+            android:text="MoveToRegistPicture"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/MoveToRegistPicture"/>
 </LinearLayout>

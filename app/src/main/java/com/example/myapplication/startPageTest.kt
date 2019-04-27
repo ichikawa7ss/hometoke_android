@@ -39,6 +39,11 @@ class startPageTest : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+
+        MoveToRegistPicture.setOnClickListener(){
+            val intent = Intent(this, RegistPicture::class.java)
+            startActivity(intent)
+        }
     }
 
 
