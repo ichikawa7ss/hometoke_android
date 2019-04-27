@@ -17,7 +17,7 @@
     <Button
             android:text="プロフィール画像を設定する"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:id="@+id/SetProfileImage"/>
+            android:layout_height="wrap_content" android:id="@+id/SetProfileImageBtn"/>
     <Button
             android:text="Button"
             android:layout_width="match_parent"
