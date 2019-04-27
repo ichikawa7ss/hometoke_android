@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -45,9 +46,12 @@ class Confirmation : AppCompatActivity() {
 
         // 完了ボタン押下
         CompleteBtn.setOnClickListener() {
+            // ユーザ登録・初回褒め登録・友達登録
             registM_users()
+            // 会員管理
             registAccountMng()
-            registM_friends()
+            // 次画面遷移
+            moveToTutorialView()
         }
     }
 
@@ -86,6 +90,8 @@ class Confirmation : AppCompatActivity() {
                 this.objectId = obj.objectId
                 // 初回のホメの登録
                 registE_serveFirst()
+                // 友達登録を実施
+                registM_friends()
             }
         }
     }
@@ -169,18 +175,40 @@ class Confirmation : AppCompatActivity() {
                 Log.d("[DEBUG]", e.message)
             } else {
                 // 検索成功時に友達マスタを登録する
-                Log.d("[DEBUG]", "保存成功")
+                for (user in objects) {
+                    // 友達テーブルへの登録
+                    if (user.objectId != this.objectId) {
+                        val obj = NCMBObject("m_friends")
+                        obj.put("blockFlg", "0")
+                        obj.put("friendId", user)
+                        obj.put("userId", this.objectId)
+                        obj.saveInBackground { e ->
+                            if (e != null) {
+                                // 保存に失敗した場合の処理
+                                Log.d("[Error]", e.toString())
+                                throw e
+                            } else {
+                                // 保存に成功した場合の処理
+                                Log.d("[DEBUG]", "保存成功　友達")
+                                Log.d("[DEBUG]", obj.toString())
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 
     // SharedPrefarenceへの登録
     private fun saveSharedPrefarence() {
-
+        // 必要があれば実装する
     }
 
     // 次画面遷移
     private fun moveToTutorialView() {
-
+        // 次画面intentの生成
+        val intent = Intent(getApplication(), tutorialPageMock::class.java)
+        // 次画面遷移
+        startActivity(intent);
     }
 }
