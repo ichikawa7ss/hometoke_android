@@ -20,7 +20,6 @@ import android.view.View
 import com.isseiaoki.simplecropview.CropImageView
 import java.io.ByteArrayOutputStream
 
-
 class SelectPicture : AppCompatActivity() {
 
     // ユーザ名
@@ -30,6 +29,8 @@ class SelectPicture : AppCompatActivity() {
     companion object {
         const val CAMERA_REQUEST_CODE = 1
         const val CAMERA_PERMISSION_REQUEST_CODE = 2
+        const val CAMERA_ROLE_REQUEST_CODE = 3
+        const val CAMERA_ROLE_PERMISSION_REQUEST_CODE = 4
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +49,7 @@ class SelectPicture : AppCompatActivity() {
             "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7");
 
         // 前画面からユーザ名を取得 // 画面　結合あとにコメントアウト解除
-        // userNm = intent.getStringExtra("userNm")
+        userNm = intent.getStringExtra("userNm")
 
         // 初期画像の設定
         cropImageView.setImageBitmap(BitmapFactory.decodeResource(resources, R.drawable.noimage))
@@ -108,6 +109,24 @@ class SelectPicture : AppCompatActivity() {
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
     }
 
+    // カメラロールから選択
+    private fun selectPicture() {
+
+        // ファイル取得アプリへのintent生成
+        val intent = Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        )
+
+        // photos or Gallary に限定
+        intent.type = "image/*"
+
+        // Chooserを起動する
+        startActivityForResult(
+                intent, CAMERA_ROLE_REQUEST_CODE
+        )
+    }
+
     // 撮影した画像への処理
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
@@ -122,17 +141,25 @@ class SelectPicture : AppCompatActivity() {
                 ChangeProfileImageBtn.visibility = View.VISIBLE
 
             }
+        } else if (requestCode == CAMERA_ROLE_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            data?.data.let { uri ->
+                // 撮影した画像を画面に表示
+                var bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri)
+                cropImageView.setImageBitmap(bitmap)
+                // 画像選択状態に切り替え
+                SetProfileImageBtn.visibility = View.GONE
+                skipBtn.visibility = View.GONE
+                moveToConfirmationBtn.visibility = View.VISIBLE
+                ChangeProfileImageBtn.visibility = View.VISIBLE
+            }
         }
     }
 
-    // カメラロールから選択
-    private fun selectPicture() {
-
-    }
-
     // カメラアプリのパーミッションを取得
-    private fun grantCameraPermission() =
+    private fun grantCameraPermission() {
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), CAMERA_ROLE_PERMISSION_REQUEST_CODE)
+    }
 
     // 写真(デフォルト)をDBに保存する
     private fun savePicture() {
