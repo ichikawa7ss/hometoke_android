@@ -16,9 +16,8 @@ import com.nifcloud.mbaas.core.NCMB
 import com.nifcloud.mbaas.core.NCMBFile
 import com.nifcloud.mbaas.core.NCMBAcl
 import android.graphics.BitmapFactory
-import android.graphics.ColorFilter
+import android.view.View
 import com.isseiaoki.simplecropview.CropImageView
-import kotlinx.android.synthetic.main.activity_confirmation.*
 import java.io.ByteArrayOutputStream
 
 
@@ -36,6 +35,12 @@ class SelectPicture : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_picture)
+
+        // 初期は画像未選択状態
+        SetProfileImageBtn.visibility = View.VISIBLE
+        skipBtn.visibility = View.VISIBLE
+        moveToConfirmationBtn.visibility = View.GONE
+        ChangeProfileImageBtn.visibility = View.GONE
 
         // ニフクラ
         NCMB.initialize( applicationContext,
@@ -95,8 +100,15 @@ class SelectPicture : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             data?.extras?.get("data")?.let { selectedImage ->
+                // 撮影した画像を画面に表示
                 val selectedImageBp = selectedImage as Bitmap
                 cropImageView.setImageBitmap(selectedImageBp)
+                // 画像選択状態に切り替え
+                SetProfileImageBtn.visibility = View.GONE
+                skipBtn.visibility = View.GONE
+                moveToConfirmationBtn.visibility = View.VISIBLE
+                ChangeProfileImageBtn.visibility = View.VISIBLE
+
             }
         }
     }

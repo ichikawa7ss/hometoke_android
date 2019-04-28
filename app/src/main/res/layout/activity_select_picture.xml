@@ -28,5 +28,13 @@
             android:text="スキップ"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" android:id="@+id/skipBtn"/>
+    <Button
+            android:text="次へ"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/moveToConfirmationBtn"/>
+    <Button
+            android:text="もう一度設定する"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/ChangeProfileImageBtn"/>
 
 </LinearLayout>
