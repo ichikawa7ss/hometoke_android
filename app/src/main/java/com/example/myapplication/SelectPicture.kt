@@ -67,6 +67,18 @@ class SelectPicture : AppCompatActivity() {
             savePicture()
             moveToConfirmation()
         }
+
+        // 次へボタン押下時
+        moveToConfirmationBtn.setOnClickListener() {
+            savePicture()
+            moveToConfirmation()
+        }
+
+        // 再設定ボタン押下時
+        ChangeProfileImageBtn.setOnClickListener() {
+            showSelector()
+        }
+
     }
 
     // 画像設定方法の選択
