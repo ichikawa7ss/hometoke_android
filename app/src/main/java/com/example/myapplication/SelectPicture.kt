@@ -1,10 +1,8 @@
 package com.example.myapplication
 
-import android.app.PendingIntent.getActivity
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_regist_picture.*
+import kotlinx.android.synthetic.main.activity_select_picture.*
 import android.content.DialogInterface
 import android.content.Intent
 import android.provider.MediaStore
@@ -17,14 +15,14 @@ import android.graphics.Bitmap
 import com.nifcloud.mbaas.core.NCMB
 import com.nifcloud.mbaas.core.NCMBFile
 import com.nifcloud.mbaas.core.NCMBAcl
-import android.R.attr.data
 import android.graphics.BitmapFactory
-import android.support.v4.app.NotificationCompat.getExtras
+import android.graphics.ColorFilter
 import com.isseiaoki.simplecropview.CropImageView
+import kotlinx.android.synthetic.main.activity_confirmation.*
 import java.io.ByteArrayOutputStream
 
 
-class RegistPicture : AppCompatActivity() {
+class SelectPicture : AppCompatActivity() {
 
     // ユーザ名
     private var userNm = "defaultNm"
@@ -37,7 +35,7 @@ class RegistPicture : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_regist_picture)
+        setContentView(R.layout.activity_select_picture)
 
         // ニフクラ
         NCMB.initialize( applicationContext,
@@ -62,6 +60,7 @@ class RegistPicture : AppCompatActivity() {
         // スキップボタン押下時 -> 初期表示の画面が設定される
         skipBtn.setOnClickListener() {
             savePicture()
+            moveToConfirmation()
         }
     }
 
@@ -111,7 +110,7 @@ class RegistPicture : AppCompatActivity() {
     private fun grantCameraPermission() =
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
 
-    // 写真をDBに保存する
+    // 写真(デフォルト)をDBに保存する
     private fun savePicture() {
         // 画像をニフクラへ保存
         // 画像の変換
@@ -137,4 +136,30 @@ class RegistPicture : AppCompatActivity() {
 
         }
     }
+
+    // 次画面へ遷移する
+    private fun moveToConfirmation () {
+
+        // 次画面intentの生成
+        val confirmationIntent = Intent(getApplication(), Confirmation::class.java)
+
+        // データのセット
+        confirmationIntent.putExtra("userNm", intent.getStringExtra("userNm"))
+        confirmationIntent.putExtra("userSex", intent.getStringExtra("userSex"))
+        confirmationIntent.putExtra("userBirthYear", intent.getStringExtra("userBirthYear"))
+        confirmationIntent.putExtra("userBirthMonth", intent.getStringExtra("userBirthMonth"))
+        confirmationIntent.putExtra("userBirthDay", intent.getStringExtra("userBirthDay"))
+        confirmationIntent.putExtra("elementarySchool", intent.getStringExtra("elementarySchool"))
+        confirmationIntent.putExtra("juniorHighSchool", intent.getStringExtra("juniorHighSchool"))
+        confirmationIntent.putExtra("highSchool", intent.getStringExtra("highSchool"))
+        confirmationIntent.putExtra("elementalySchoolEntryYear", intent.getStringExtra("elementalySchoolEntryYear"))
+        confirmationIntent.putExtra("juniorHighSchoolEntryYear", intent.getStringExtra("juniorHighSchoolEntryYear"))
+        confirmationIntent.putExtra("highSchoolEntryYear", intent.getStringExtra("highSchoolEntryYear"))
+        confirmationIntent.putExtra("mailAddress", intent.getStringExtra("mailAddress"))
+        confirmationIntent.putExtra("password", intent.getStringExtra("password"))
+
+        // 次画面遷移
+        startActivity(confirmationIntent);
+    }
+
 }

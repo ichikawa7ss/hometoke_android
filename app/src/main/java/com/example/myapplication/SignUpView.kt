@@ -156,7 +156,7 @@ class SignUpView : AppCompatActivity() {
         setBirthDayAndGrade()
 
         // 次画面intentの生成
-        val intent = Intent(getApplication(), RegistPicture::class.java)
+        val intent = Intent(getApplication(), SelectPicture::class.java)
 
         // データのセット
         intent.putExtra("userNm", userNm.text.toString())
@@ -167,8 +167,8 @@ class SignUpView : AppCompatActivity() {
         intent.putExtra("elementalySchoolEntryYear", this.elementalySchoolEntryYear)
         intent.putExtra("juniorHighSchoolEntryYear", this.juniorHighSchoolEntryYear)
         intent.putExtra("highSchoolEntryYear", this.highSchoolEntryYear)
-        intent.putExtra("userMailAddress", userMailAddress.text.toString())
-        intent.putExtra("userPassword", userPassword.text.toString())
+        intent.putExtra("mailAddress", userMailAddress.text.toString())
+        intent.putExtra("password", userPassword.text.toString())
 
         // 次画面遷移
         startActivity(intent);
