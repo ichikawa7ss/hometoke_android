@@ -18,14 +18,16 @@ import com.nifcloud.mbaas.core.NCMB
 import com.nifcloud.mbaas.core.NCMBFile
 import com.nifcloud.mbaas.core.NCMBAcl
 import android.R.attr.data
+import android.graphics.BitmapFactory
 import android.support.v4.app.NotificationCompat.getExtras
+import com.isseiaoki.simplecropview.CropImageView
 import java.io.ByteArrayOutputStream
 
 
 class RegistPicture : AppCompatActivity() {
 
-    // 選択中の画像url
-    private var url = R.drawable.noimage
+    // ユーザ名
+    private var userNm = "defaultNm"
 
     // カメラステータス
     companion object {
@@ -42,9 +44,12 @@ class RegistPicture : AppCompatActivity() {
             "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1",
             "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7");
 
+        // 前画面からユーザ名を取得 // 画面　結合あとにコメントアウト解除
+        // userNm = intent.getStringExtra("userNm")
+
         // 初期画像の設定
-        Picasso.with(this).load(url)
-            .transform(CircleTransform()).into(profileImage)
+        cropImageView.setImageBitmap(BitmapFactory.decodeResource(resources, R.drawable.noimage))
+        cropImageView.setCropMode(CropImageView.CropMode.CIRCLE)
 
         // パーミッションの取得
         grantCameraPermission()
@@ -52,6 +57,11 @@ class RegistPicture : AppCompatActivity() {
         // プロフィール画像の設定ボタンを押下
         SetProfileImageBtn.setOnClickListener(){
             showSelector()
+        }
+
+        // スキップボタン押下時 -> 初期表示の画面が設定される
+        skipBtn.setOnClickListener() {
+            savePicture()
         }
     }
 
@@ -85,32 +95,9 @@ class RegistPicture : AppCompatActivity() {
     // 撮影した画像への処理
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val image = data?.extras?.get("data")?.let {
-                // 画像をニフクラへ保存
-
-                // 画像の変換
-                val bp = it as Bitmap
-                val byteArrayStream = ByteArrayOutputStream()
-                bp.compress(Bitmap.CompressFormat.PNG, 0, byteArrayStream)
-                val dataByte = byteArrayStream.toByteArray()
-
-                //ACL 読み込み:可 , 書き込み:可
-                val acl = NCMBAcl()
-                acl.publicReadAccess = true
-                acl.publicWriteAccess = true
-
-                // 登録するファイル情報
-                val file : NCMBFile = NCMBFile("test.png", dataByte, acl);
-                file.saveInBackground() { e ->
-                    if (e != null) {
-                        // エラー時の処理
-                        Log.d("[DEBUG]", "画像の登録に失敗しました")
-                    } else {
-                        // 登録成功時の処理
-                        Log.d("[DEBUG]", "画像の登録に成功")
-                    }
-
-                }
+            data?.extras?.get("data")?.let { selectedImage ->
+                val selectedImageBp = selectedImage as Bitmap
+                cropImageView.setImageBitmap(selectedImageBp)
             }
         }
     }
@@ -123,4 +110,31 @@ class RegistPicture : AppCompatActivity() {
     // カメラアプリのパーミッションを取得
     private fun grantCameraPermission() =
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+
+    // 写真をDBに保存する
+    private fun savePicture() {
+        // 画像をニフクラへ保存
+        // 画像の変換
+        val byteArrayStream = ByteArrayOutputStream()
+        cropImageView.croppedBitmap.compress(Bitmap.CompressFormat.PNG, 0, byteArrayStream)
+        val dataByte = byteArrayStream.toByteArray()
+
+        //ACL 読み込み:可 , 書き込み:可
+        val acl = NCMBAcl()
+        acl.publicReadAccess = true
+        acl.publicWriteAccess = true
+
+        // 登録するファイル情報
+        val file : NCMBFile = NCMBFile("${userNm}_profile.png", dataByte, acl);
+        file.saveInBackground() { e ->
+            if (e != null) {
+                // エラー時の処理
+                Log.d("[DEBUG]", "画像の登録に失敗しました")
+            } else {
+                // 登録成功時の処理
+                Log.d("[DEBUG]", "画像の登録に成功")
+            }
+
+        }
+    }
 }

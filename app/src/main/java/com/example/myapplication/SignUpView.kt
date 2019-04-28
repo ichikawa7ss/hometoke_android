@@ -156,7 +156,7 @@ class SignUpView : AppCompatActivity() {
         setBirthDayAndGrade()
 
         // 次画面intentの生成
-        val intent = Intent(getApplication(), IFcheckView::class.java)
+        val intent = Intent(getApplication(), RegistPicture::class.java)
 
         // データのセット
         intent.putExtra("userNm", userNm.text.toString())

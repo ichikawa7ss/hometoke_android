@@ -10,17 +10,23 @@
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" app:srcCompat="@drawable/progress" android:id="@+id/ProgressBar"/>
-    <ImageView
-            android:layout_width="300dp"
-            android:layout_height="300dp" app:srcCompat="@drawable/noimage" android:id="@+id/profileImage"
-            android:layout_gravity="center"/>
+
+    <com.isseiaoki.simplecropview.CropImageView
+            android:id="@+id/cropImageView"
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:padding="16dp"
+            custom:cropMode="ratio_1_1"
+    />
+
     <Button
             android:text="プロフィール画像を設定する"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" android:id="@+id/SetProfileImageBtn"/>
     <Button
-            android:text="Button"
+            android:text="スキップ"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:id="@+id/button2"/>
+            android:layout_height="wrap_content" android:id="@+id/skipBtn"/>
 
 </LinearLayout>
