@@ -14,11 +14,7 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".SelectPicture">
-        </activity>
-        <activity android:name=".tutorialPageMock">
-        </activity>
-        <activity android:name=".Confirmation">
+        <activity android:name=".startPageTest">
         </activity>
         <activity
                 android:name=".IFcheckView"
@@ -27,15 +23,24 @@
         </activity>
         <activity android:name=".SignUpView">
         </activity>
+        <activity android:name=".SelectPicture">
+        </activity>
+        <activity android:name=".tutorialPageMock">
+        </activity>
+        <activity android:name=".Confirmation">
+        </activity>
         <activity android:name=".MainActivity">
         </activity>
-        <activity android:name=".startPageTest">
+        <activity android:name=".ReceiveView">
+        </activity>
+        <activity android:name=".ReceiveDetailView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
