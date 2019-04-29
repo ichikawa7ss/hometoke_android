@@ -15,6 +15,11 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity android:name=".startPageTest">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity
                 android:name=".IFcheckView"
@@ -29,18 +34,12 @@
         </activity>
         <activity android:name=".Confirmation">
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".ServeView">
         </activity>
         <activity android:name=".ReceiveView">
         </activity>
         <activity android:name=".ReceiveDetailView">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
-
     </application>
 
 </manifest>

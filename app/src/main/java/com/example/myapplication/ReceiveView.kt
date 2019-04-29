@@ -4,9 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
 import android.support.v7.app.AppCompatActivity
+import com.nifcloud.mbaas.core.NCMBException
+import com.nifcloud.mbaas.core.NCMBObject
+import com.nifcloud.mbaas.core.DoneCallback
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,7 @@ import android.widget.TextView
 import com.nifcloud.mbaas.core.NCMB
 import kotlinx.android.synthetic.main.activity_receive_view.*
 
-class ReceiveView() : AppCompatActivity(){
+class ReceiveView : AppCompatActivity() {
 
     val array_title = arrayOf<String>(
         "Mercury",
