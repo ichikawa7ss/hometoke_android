@@ -18,7 +18,7 @@ import android.widget.Toast
 
 
 
-class MainActivity : AppCompatActivity() {
+class ServeView : AppCompatActivity() {
     // TODO 質問に対する性別の条件を反映させる
 
     // TODO タブの表示方法を調べる
@@ -301,7 +301,7 @@ class MainActivity : AppCompatActivity() {
         val userInfoSP : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         val receiverName : String = receiverNames[receiverNum]
         if (receiverName.isEmpty()) {
-            val toast = Toast.makeText(this@MainActivity, "このメンバーはホメられません", Toast.LENGTH_LONG)
+            val toast = Toast.makeText(this@ServeView, "このメンバーはホメられません", Toast.LENGTH_LONG)
             toast.show()
         } else {
             // ホメるテーブル格納用のNCMBObjectを作成
@@ -324,7 +324,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     Log.d("[DEBUG]", obj.toString())
                     Log.d("[DEBUG]", "e_serveデータ保存成功")
-                    val toast = Toast.makeText(this@MainActivity, "${receiverName}さんを${questionTitle}とホメました！", Toast.LENGTH_LONG)
+                    val toast = Toast.makeText(this@ServeView, "${receiverName}さんを${questionTitle}とホメました！", Toast.LENGTH_LONG)
                     toast.show()
                     decideQuestion()
                 }

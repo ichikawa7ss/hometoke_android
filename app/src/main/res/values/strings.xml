@@ -1,4 +1,11 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Hometoke</string>
     <string name="title_activity_ifcheck_view">IFcheckView</string>
+    <string name="title_activity_item_bottom_navigation">item_bottom_navigation</string>
+    <string name="title_serve">ホメる</string>
+    <string name="title_receive">ホメられた</string>
+    <string name="flat_text">の称号が与えられました。</string>
+    <string name="stamp_flattext2">あなたは</string>
+    <string name="stamp_flat_text3">に選ばれました</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>
