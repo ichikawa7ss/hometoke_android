@@ -202,6 +202,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun decideQuestion() {
 
+
         if (this.dataQuestions.isEmpty()) {
             Log.w("[WARN]","取得できる質問がありません")
         } else {
@@ -314,6 +315,7 @@ class MainActivity : AppCompatActivity() {
             obj.put("receiverId",objectIds[receiverNum] )
             obj.put("questionPhrase",this.questionTempPhrase)
 
+            // データストアへの保存を実施
             // データストアへの保存を実施
             obj.saveInBackground{ error ->
                 if (error != null) {
