@@ -5,13 +5,13 @@
                                              android:layout_height="wrap_content">
 
     <ImageView
-            android:layout_width="70dp"
-            android:layout_height="70dp" app:srcCompat="@drawable/noimage"
-            android:id="@+id/myImageView" android:layout_marginTop="16dp"
+            android:layout_width="66dp"
+            android:layout_height="73dp" app:srcCompat="@drawable/noimage"
+            android:id="@+id/myImageView" android:layout_marginTop="8dp"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="16dp"
             android:contentDescription="TODO"
-            android:layout_marginLeft="8dp"/>
+            android:layout_marginLeft="16dp"/>
     <TextView
             android:text="TextView"
             android:layout_width="wrap_content"
