@@ -9,7 +9,7 @@
 
     <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" app:srcCompat="@drawable/progress_confirmation"
+            android:layout_height="wrap_content" app:srcCompat="@drawable/kihonnjouhou"
             android:id="@+id/imageView4" android:layout_weight="1"/>
     <TextView
             android:text="お名前"
