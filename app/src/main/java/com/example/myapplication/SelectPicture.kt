@@ -37,12 +37,6 @@ class SelectPicture : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_picture)
 
-        // 初期は画像未選択状態
-        SetProfileImageBtn.visibility = View.VISIBLE
-        skipBtn.visibility = View.VISIBLE
-        moveToConfirmationBtn.visibility = View.GONE
-        ChangeProfileImageBtn.visibility = View.GONE
-
         // ニフクラ
         NCMB.initialize( applicationContext,
             "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1",
@@ -63,21 +57,10 @@ class SelectPicture : AppCompatActivity() {
             showSelector()
         }
 
-        // スキップボタン押下時 -> 初期表示の画面が設定される
-        skipBtn.setOnClickListener() {
-            savePicture()
-            moveToConfirmation()
-        }
-
         // 次へボタン押下時
         moveToConfirmationBtn.setOnClickListener() {
             savePicture()
             moveToConfirmation()
-        }
-
-        // 再設定ボタン押下時
-        ChangeProfileImageBtn.setOnClickListener() {
-            showSelector()
         }
 
     }
@@ -123,7 +106,7 @@ class SelectPicture : AppCompatActivity() {
 
         // Chooserを起動する
         startActivityForResult(
-                intent, CAMERA_ROLE_REQUEST_CODE
+            intent, CAMERA_ROLE_REQUEST_CODE
         )
     }
 
@@ -134,23 +117,12 @@ class SelectPicture : AppCompatActivity() {
                 // 撮影した画像を画面に表示
                 val selectedImageBp = selectedImage as Bitmap
                 cropImageView.setImageBitmap(selectedImageBp)
-                // 画像選択状態に切り替え
-                SetProfileImageBtn.visibility = View.GONE
-                skipBtn.visibility = View.GONE
-                moveToConfirmationBtn.visibility = View.VISIBLE
-                ChangeProfileImageBtn.visibility = View.VISIBLE
-
             }
         } else if (requestCode == CAMERA_ROLE_REQUEST_CODE && resultCode == Activity.RESULT_OK){
             data?.data.let { uri ->
                 // 撮影した画像を画面に表示
                 var bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri)
                 cropImageView.setImageBitmap(bitmap)
-                // 画像選択状態に切り替え
-                SetProfileImageBtn.visibility = View.GONE
-                skipBtn.visibility = View.GONE
-                moveToConfirmationBtn.visibility = View.VISIBLE
-                ChangeProfileImageBtn.visibility = View.VISIBLE
             }
         }
     }
