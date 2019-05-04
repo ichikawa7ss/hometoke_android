@@ -22,7 +22,8 @@
             tools:layout_conversion_absoluteHeight="19dp"
             tools:layout_conversion_absoluteWidth="56dp"
             app:layout_constraintStart_toStartOf="@+id/userNm"
-            app:layout_constraintBottom_toTopOf="@+id/userNm"/>
+            app:layout_constraintBottom_toTopOf="@+id/userNm"
+    />
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="0" app:srcCompat="@drawable/require" android:id="@+id/imageView2"
