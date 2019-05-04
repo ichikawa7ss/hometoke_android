@@ -1,54 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".SelectPicture" android:orientation="vertical" android:id="@+id/linearLayout2">
+        tools:context=".SelectPicture" android:orientation="vertical">
 
     <ImageView
-            android:layout_width="0"
-            android:layout_height="wrap_content" app:srcCompat="@drawable/kihonnjouhou" android:id="@+id/ProgressBar"
-            tools:layout_conversion_absoluteHeight="98dp"
-            app:layout_constraintWidth_percent="0.9"
-
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toEndOf="parent"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" app:srcCompat="@drawable/progress" android:id="@+id/ProgressBar"/>
 
     <com.isseiaoki.simplecropview.CropImageView
-            xmlns:custom="http://schemas.android.com/apk/res-auto"
             android:id="@+id/cropImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
             android:padding="16dp"
             custom:cropMode="ratio_1_1"
-            tools:layout_conversion_absoluteHeight="250dp" tools:layout_editor_absoluteY="98dp"
-            tools:layout_editor_absoluteX="0dp" tools:layout_conversion_absoluteWidth="411dp"/>
+    />
 
     <Button
             android:text="プロフィール画像を設定する"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/SetProfileImageBtn"
-            tools:layout_conversion_absoluteHeight="48dp" tools:layout_editor_absoluteY="348dp"
-            tools:layout_editor_absoluteX="0dp" tools:layout_conversion_absoluteWidth="411dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/SetProfileImageBtn"/>
     <Button
             android:text="スキップ"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/skipBtn" tools:layout_conversion_absoluteHeight="48dp"
-            tools:layout_editor_absoluteY="396dp" tools:layout_editor_absoluteX="0dp"
-            tools:layout_conversion_absoluteWidth="411dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/skipBtn"/>
     <Button
             android:text="次へ"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/moveToConfirmationBtn"
-            tools:layout_conversion_absoluteHeight="48dp" tools:layout_editor_absoluteY="444dp"
-            tools:layout_editor_absoluteX="0dp" tools:layout_conversion_absoluteWidth="411dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/moveToConfirmationBtn"/>
     <Button
             android:text="もう一度設定する"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/ChangeProfileImageBtn"
-            tools:layout_conversion_absoluteHeight="48dp" tools:layout_editor_absoluteY="492dp"
-            tools:layout_editor_absoluteX="0dp" tools:layout_conversion_absoluteWidth="411dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/ChangeProfileImageBtn"/>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
