@@ -1,39 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
                                              android:layout_width="match_parent"
                                              android:layout_height="wrap_content">
 
     <ImageView
-            android:layout_width="66dp"
-            android:layout_height="73dp" app:srcCompat="@drawable/noimage"
-            android:id="@+id/myImageView" android:layout_marginTop="8dp"
+            android:layout_width="60dp"
+            android:layout_height="69dp" app:srcCompat="@drawable/rukawa"
+            android:id="@+id/myImageView" android:layout_marginTop="20dp"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="23dp"
             android:contentDescription="TODO"
-            android:layout_marginLeft="16dp"/>
+            android:layout_marginLeft="23dp"
+    />
     <TextView
             android:text="TextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/myTitleLabel" android:textSize="24sp"
-            android:textStyle="bold" app:layout_constraintStart_toEndOf="@+id/myImageView"
-            android:layout_marginStart="8dp" android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginLeft="8dp"/>
+            android:id="@+id/myTitleLabel" android:textSize="20sp"
+            android:textStyle="bold" app:layout_constraintStart_toEndOf="@+id/imageView6"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="16dp" android:layout_marginLeft="10dp" android:layout_marginStart="10dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"/>
     <TextView
             android:text="TextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="16dp"
             android:id="@+id/server_user"
-            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/myTitleLabel"
-            app:layout_constraintStart_toEndOf="@+id/myImageView" android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"/>
+            app:layout_constraintStart_toStartOf="@+id/myTitleLabel"
+            app:layout_constraintEnd_toEndOf="@+id/myTitleLabel"
+            app:layout_constraintTop_toBottomOf="@+id/myTitleLabel" android:layout_marginTop="15dp"/>
     <TextView
             android:text="TextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/questionPhraseLabel"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/server_user" app:layout_constraintStart_toEndOf="@+id/myImageView"
-            android:layout_marginStart="8dp" android:layout_marginLeft="8dp"/>
+            app:layout_constraintStart_toStartOf="@+id/server_user"
+            app:layout_constraintEnd_toEndOf="@+id/server_user" app:layout_constraintTop_toBottomOf="@+id/server_user"
+            android:layout_marginTop="8dp"/>
+    <ImageView
+            android:layout_width="86dp"
+            android:layout_height="96dp" app:srcCompat="@drawable/kitte"
+            android:id="@+id/imageView6"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="10dp"
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="10dp"
+            app:layout_constraintVertical_bias="1.0" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="10dp" android:layout_marginStart="10dp"/>
 </android.support.constraint.ConstraintLayout>
