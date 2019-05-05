@@ -29,18 +29,38 @@ import java.lang.Exception
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.concurrent.schedule
 
 class ReceiveView : AppCompatActivity() {
+
+    var MyName = String()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         NCMB.initialize(applicationContext, "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1", "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7")
         setContentView(R.layout.activity_receive_view)
 
-        val userInfo: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+        MyName = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("userName","")
 
-    //uploadReceiveRecord()
+        // SQLiteのデータ読み込み・listView表示
+        loadListView()
 
+        // 30秒ごとにSQLiteを更新
+        Timer().schedule(30000, 30000) {
+            Log.d("[DEBUG]", "タイマー起動")
+            uploadReceiveLocalRecord()
+        }
+
+        swipeRefreshLayout.setOnRefreshListener {
+            loadListView()
+            swipeRefreshLayout.isRefreshing = false
+        }
+
+    }
+
+    // SQLiteからホメられたデータの読み込み
+    // セルタップ時の動作を記述
+    fun loadListView() {
         val helper = ReceiveOpenHelper(applicationContext)
 
         helper.use {
@@ -58,7 +78,7 @@ class ReceiveView : AppCompatActivity() {
                 val selected_imgid     = list[position].stampImageBlob
                 val selected_title     = "「" + list[position].questionTitle + "」"
                 val selected_server    = "From " + list[position].serverTitle
-                val selected_user_name = "${userInfo.getString("userName", "")}さん"
+                val selected_user_name = "${MyName}さん"
                 val selected_question  = list[position].questionPhrase
 
                 // intent = 画面間で渡される入れ物 に表示したい情報をセット
@@ -77,12 +97,11 @@ class ReceiveView : AppCompatActivity() {
 
     // ホメられたデータをSQLiteに書き込み
     // 更新されてないデータだけを検索して新規登録
-    fun uploadReceiveRecord() {
+    fun uploadReceiveLocalRecord() {
 
         // preference,editer,dataFormatの用意
         val pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         val editor = pref.edit()
-        editor.putString("updateReceiveTableTime", "2019-03-05T23:58:08.469+09:00").apply()
 
         @SuppressLint("SimpleDateFormat")
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
@@ -91,11 +110,6 @@ class ReceiveView : AppCompatActivity() {
         val myObjectID = pref.getString("objectId", null)
         // ホメられたテーブルから新しいデータを格納
         var newReceiveData = listOf<NCMBObject>()
-
-        // todo 確認画面に移す
-        if (pref.getString("updateReceiveTableTime", null) == null) {
-            editor.putString("updateReceiveTableTime", "2019-03-05T23:58:08.469+09:00").apply()
-        }
 
         // OpenHelperの呼び出して、DB操作用のオブジェクトを用意
         val helper = ReceiveOpenHelper(applicationContext)
@@ -181,7 +195,6 @@ class ReceiveView : AppCompatActivity() {
         return date
     }
 }
-
 
 
 // リスト項目を保持 & 再利用するための入れ物
