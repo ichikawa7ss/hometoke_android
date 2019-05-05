@@ -17,6 +17,8 @@ import android.widget.ArrayAdapter
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import com.example.myapplication.Constants.Companion.READ_CELL
+import com.example.myapplication.Constants.Companion.UNREAD_CELL
 import com.example.myapplication.db.ReceiveOpenHelper
 import com.example.myapplication.db.ReceiveRowParser
 import com.example.myapplication.entity.ReceiveEntity
@@ -25,6 +27,7 @@ import kotlinx.android.synthetic.main.activity_receive_view.*
 import org.jetbrains.anko.db.SqlOrderDirection
 import org.jetbrains.anko.db.insert
 import org.jetbrains.anko.db.select
+import org.jetbrains.anko.db.update
 import java.lang.Exception
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -55,7 +58,11 @@ class ReceiveView : AppCompatActivity() {
             loadListView()
             swipeRefreshLayout.isRefreshing = false
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
+        loadListView()
     }
 
     // SQLiteからホメられたデータの読み込み
@@ -65,28 +72,32 @@ class ReceiveView : AppCompatActivity() {
 
         helper.use {
             val list = select(ReceiveOpenHelper.TABLE_NAME)
-                .orderBy("_id",SqlOrderDirection.DESC)
+                .orderBy("_id", SqlOrderDirection.DESC)
                 .parseList(ReceiveRowParser())
 
-            listView.adapter = ReceiveAdapter(this@ReceiveView,list)
+            listView.adapter = ReceiveAdapter(this@ReceiveView, list)
+
 
             // リストがタップされたら手紙画面へ遷移するための設定
-            listView.setOnItemClickListener {parent, view, position, id ->
+            listView.setOnItemClickListener { parent, view, position, id ->
                 val intent = Intent(this@ReceiveView, ReceiveDetailView::class.java)
 
                 // タップされた position の情報を取得して加工
-                val selected_imgid     = list[position].stampImageBlob
-                val selected_title     = "「" + list[position].questionTitle + "」"
-                val selected_server    = "From " + list[position].serverTitle
+                val selected_imgid = list[position].stampImageBlob
+                val selected_title = "「" + list[position].questionTitle + "」"
+                val selected_server = "From " + list[position].serverTitle
                 val selected_user_name = "${MyName}さん"
-                val selected_question  = list[position].questionPhrase
+                val selected_question = list[position].questionPhrase
+                val selected_readFlg = list[position].readFlg
 
                 // intent = 画面間で渡される入れ物 に表示したい情報をセット
+                intent.putExtra("intent_id", list[position]._id)
                 intent.putExtra("intent_imgid", selected_imgid)
                 intent.putExtra("intent_title", selected_title)
                 intent.putExtra("intent_server", selected_server)
                 intent.putExtra("intent_user_name", selected_user_name)
                 intent.putExtra("intent_question", selected_question)
+                intent.putExtra("intent_readFlg", selected_readFlg)
 
                 // intent を手紙画面へ
                 startActivity(intent)
@@ -197,7 +208,7 @@ class ReceiveView : AppCompatActivity() {
 }
 
 
-// リスト項目を保持 & 再利用するための入れ物
+// 既読のリスト
 data class ViewHolder(
     val holderImageView: ImageView,
     val holderTitleLabel: TextView,
@@ -205,6 +216,13 @@ data class ViewHolder(
     val holderquestionPhraseLabel: TextView,
     val holderServeDate: TextView
 )
+
+// 未読のリスト
+data class UnreadViewHolder(
+    val holderserver_user: TextView,
+    val holderServeDate: TextView
+)
+
 
 class ReceiveAdapter (private val context: Context,
                         private val ReceiveData:List<ReceiveEntity>): BaseAdapter() {
@@ -214,33 +232,57 @@ class ReceiveAdapter (private val context: Context,
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         var viewHolder : ViewHolder? = null
+        var unreadViewHolder : UnreadViewHolder? = null
+
         var view = convertView
 
-        // ViewHolder に値があれば再利用して表示
-        // なければ新たに取得し、ViewHolder へ格納
-        if (view == null) {
+        if (getItemViewType(position) == READ_CELL) {
+            // ViewHolder に値があれば再利用して表示
+            // なければ新たに取得し、ViewHolder へ格納
+            if (view == null) {
 
-            view = inflater!!.inflate(R.layout.item_receive_cell, parent, false)
-            viewHolder = ViewHolder(
-                view.findViewById(R.id.myImageView),
-                view.findViewById(R.id.myTitleLabel),
-                view.findViewById(R.id.server_user),
-                view.findViewById(R.id.questionPhraseLabel),
-                view.findViewById(R.id.serveDate)
-            )
-            view.tag = viewHolder
+                view = inflater!!.inflate(R.layout.item_receive_cell, parent, false)
 
-        } else {
-            viewHolder = view.tag as ViewHolder
+                viewHolder = ViewHolder(
+                    view.findViewById(R.id.myImageView),
+                    view.findViewById(R.id.myTitleLabel),
+                    view.findViewById(R.id.server_user),
+                    view.findViewById(R.id.questionPhraseLabel),
+                    view.findViewById(R.id.serveDate)
+                )
+                view.tag = viewHolder
+
+            } else {
+                viewHolder = view.tag as ViewHolder
+            }
+
+            // リストの情報を設定
+            viewHolder.holderImageView.setImageBitmap(BitmapFactory.decodeByteArray(ReceiveData[position].stampImageBlob, 0, ReceiveData[position].stampImageBlob!!.size))
+            viewHolder.holderTitleLabel.text = ReceiveData[position].questionTitle
+            viewHolder.holderserver_user.text = "From " + ReceiveData[position].serverTitle
+            viewHolder.holderquestionPhraseLabel.text = ReceiveData[position].questionPhrase
+            viewHolder.holderServeDate.text = ReceiveData[position].serveDate
+        } else if (getItemViewType(position) == UNREAD_CELL) {
+            // ViewHolder に値があれば再利用して表示
+            // なければ新たに取得し、ViewHolder へ格納
+            if (view == null) {
+
+                view = inflater!!.inflate(R.layout.item_unread_cell, parent, false)
+                unreadViewHolder = UnreadViewHolder(
+                    view.findViewById(R.id.unreadServerUser),
+                    view.findViewById(R.id.unreadServeDate)
+                )
+                view.tag = unreadViewHolder
+
+            } else {
+                unreadViewHolder = view.tag as UnreadViewHolder
+            }
+
+            // リストの情報を設定
+            unreadViewHolder.holderserver_user.text = "From " + ReceiveData[position].serverTitle
+            unreadViewHolder.holderServeDate.text = ReceiveData[position].serveDate
+
         }
-
-        // リストの情報を設定
-        viewHolder.holderImageView.setImageBitmap(BitmapFactory.decodeByteArray(ReceiveData[position].stampImageBlob, 0, ReceiveData[position].stampImageBlob!!.size))
-        viewHolder.holderTitleLabel.text = ReceiveData[position].questionTitle
-        viewHolder.holderserver_user.text = "From " + ReceiveData[position].serverTitle
-        viewHolder.holderquestionPhraseLabel.text = ReceiveData[position].questionPhrase
-        viewHolder.holderServeDate.text = ReceiveData[position].serveDate
-
         return view!!
     }
 
@@ -249,48 +291,14 @@ class ReceiveAdapter (private val context: Context,
     override fun getItemId(position: Int) = position.toLong()
 
     override fun getCount() = ReceiveData.size
-}
 
+//    override fun getViewTypeCount() = 2
 
-// ListView に 1 行ずつリスト項目を引き渡すための入れ物
-class MyArrayAdapter (private val context: Activity,
-                      private val imgid: Array<Int>,
-                      private val title: Array<String>,
-                      private val server: Array<String>,
-                      private val question: Array<String>) : ArrayAdapter<String>(context, R.layout.item_receive_cell, title) {
-
-    // inflater という謎の必須設定
-    private var inflater : LayoutInflater? = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater?
-
-    // ここからが処理
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        var viewHolder : ViewHolder? = null
-        var view = convertView
-
-        // ViewHolder に値があれば再利用して表示
-        // なければ新たに取得し、ViewHolder へ格納
-        if (view == null) {
-
-            view = inflater!!.inflate(R.layout.item_receive_cell, parent, false)
-            viewHolder = ViewHolder(
-                view.findViewById(R.id.myImageView),
-                view.findViewById(R.id.myTitleLabel),
-                view.findViewById(R.id.server_user),
-                view.findViewById(R.id.questionPhraseLabel),
-                view.findViewById(R.id.serveDate)
-                )
-            view.tag = viewHolder
-
+    override fun getItemViewType(position: Int): Int {
+        if (ReceiveData[position].readFlg == "0") {
+            return UNREAD_CELL
         } else {
-            viewHolder = view.tag as ViewHolder
+            return READ_CELL
         }
-
-        // リストの情報を設定
-        viewHolder.holderImageView.setImageResource(imgid[position])
-        viewHolder.holderTitleLabel.text = title[position]
-        viewHolder.holderserver_user.text = "From " + server[position]
-        viewHolder.holderquestionPhraseLabel.text = question[position]
-
-        return view!!
     }
 }
