@@ -1,16 +1,18 @@
 package com.example.myapplication
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import com.nifcloud.mbaas.core.NCMB
-import com.nifcloud.mbaas.core.NCMBObject
+import com.example.myapplication.db.ReceiveOpenHelper
+import com.nifcloud.mbaas.core.*
 import kotlinx.android.synthetic.main.activity_confirmation.*
-import com.nifcloud.mbaas.core.NCMBUser
-import com.nifcloud.mbaas.core.NCMBQuery
-import com.nifcloud.mbaas.core.NCMBBase
-import java.util.Arrays
+import org.jetbrains.anko.db.insert
+import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
 
 class Confirmation : AppCompatActivity() {
 
@@ -50,6 +52,8 @@ class Confirmation : AppCompatActivity() {
             registM_users()
             // 会員管理
             registAccountMng()
+            // sharedPreferencesの保存
+            saveSharedPrefarence()
             // 次画面遷移
             moveToTutorialView()
         }
@@ -80,7 +84,7 @@ class Confirmation : AppCompatActivity() {
         obj.saveInBackground { e ->
             if (e != null) {
                 // 保存に失敗した場合の処理
-                Log.d("[Error]", e.toString())
+                Log.e("[ERROR]", e.toString())
                 throw e
             } else {
                 // 保存に成功した場合の処理
@@ -112,18 +116,50 @@ class Confirmation : AppCompatActivity() {
         obj.put("serverTitle", "ホメ界の新人")
 
         // ニフクラへの保存実行
+        // 保存に成功したらSQLiteにも保存する
         obj.saveInBackground { e ->
             if (e != null) {
                 // 保存に失敗した場合の処理
-                Log.d("[Error]", e.toString())
+                Log.e("[ERROR]", "保存失敗　メッセ")
+                Log.e("[ERROR]", e.toString())
                 throw e
             } else {
                 // 保存に成功した場合の処理
                 Log.d("[DEBUG]", "保存成功　メッセ")
                 Log.d("[DEBUG]", obj.toString())
+
+                val imageName = obj.getString("questionId")
+                val fileName = NCMBFile("${imageName}.png")
+
+                // 質問画像をBITMAPへ変化してSQLiteに格納
+                fileName.fetchInBackground { imgData, error ->
+                    Log.d("[DEBUG]", "アクセス成功　ファイルストア")
+
+                    // SQLiteへの登録
+                    // OpenHelperの呼び出して、DB操作用のオブジェクトを用意
+                    val helper = ReceiveOpenHelper(applicationContext)
+
+                    helper.use {
+                        // 最初にホメられた日時を取得する
+                        val splitDate = obj.getString("createDate").split("-")
+                        val serveDate = splitDate[0] + "/" + splitDate[1] + "/" + splitDate[2].substring(0, 2)
+
+                        // SQLiteに挿入
+                        insert(
+                            ReceiveOpenHelper.TABLE_NAME,
+                            "questionTitle" to obj.getString("questionTitle"),
+                            "serverTitle" to obj.getString("serverTitle"),
+                            "questionPhrase" to obj.getString("questionPhrase"),
+                            "serveDate" to serveDate,
+                            "stampImageBlob" to imgData as ByteArray,
+                            "readFlg" to obj.getString("readFlg")
+                        )
+
+                        Log.d("[DEBUG]", "保存成功　SQLite")
+                    }
+                }
             }
         }
-
     }
 
     // 会員管理への登録
@@ -134,12 +170,11 @@ class Confirmation : AppCompatActivity() {
         user.userName = userNm.text.toString()
         user.setPassword(this.password)
         user.mailAddress = mailAddress.text.toString()
-
         user.saveInBackground { e ->
             if (e != null) {
                 // 保存に失敗した場合の処理
-                Log.d("[Error]", e.toString())
-                throw e
+                Log.e("[ERROR]", "保存失敗　会員管理")
+                Log.e("[ERROR]", e.toString())
             } else {
                 // 保存に成功した場合の処理
                 Log.d("[DEBUG]", "保存成功　会員管理")
@@ -172,7 +207,8 @@ class Confirmation : AppCompatActivity() {
         query.findInBackground { objects, e ->
             if (e != null){
                 // 検索失敗時の処理
-                Log.d("[DEBUG]", e.message)
+
+                Log.e("[ERROR]", e.message)
             } else {
                 // 検索成功時に友達マスタを登録する
                 for (user in objects) {
@@ -185,7 +221,8 @@ class Confirmation : AppCompatActivity() {
                         obj.saveInBackground { e ->
                             if (e != null) {
                                 // 保存に失敗した場合の処理
-                                Log.d("[Error]", e.toString())
+                                Log.e("[ERROR]", "保存失敗　友達")
+                                Log.e("[ERROR]", e.toString())
                                 throw e
                             } else {
                                 // 保存に成功した場合の処理
@@ -201,7 +238,24 @@ class Confirmation : AppCompatActivity() {
 
     // SharedPrefarenceへの登録
     private fun saveSharedPrefarence() {
-        // 必要があれば実装する
+        // preference,editer,dataFormatの用意
+        val pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        val editor = pref.edit()
+
+        @SuppressLint("SimpleDateFormat")
+        val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+
+        editor.putString("userName",userNm.text.toString())
+        editor.putString("objectId",this.objectId)
+        editor.putString("loginFlg","1")
+        editor.putString("gender",userSex.text.toString())
+        editor.putString("elementarySchool",ElementarySchool.text.toString())
+        editor.putString("juniorHighSchool",JuniorHighSchool.text.toString())
+        editor.putString("highSchool",HighSchool.text.toString())
+        editor.putString("entryYear",elementarySchoolEntryYear.text.toString())
+        editor.putString("registTitle","ホメ界の新星")
+        editor.putString("questionId","EhjSthKAdd1zLtnR")
+        editor.putString("updateReceiveTableTime", df.format(Date())).apply()
     }
 
     // 次画面遷移

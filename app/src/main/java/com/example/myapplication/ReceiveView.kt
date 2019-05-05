@@ -37,24 +37,7 @@ class ReceiveView : AppCompatActivity() {
         NCMB.initialize(applicationContext, "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1", "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7")
         setContentView(R.layout.activity_receive_view)
 
-
-        // TODO 【ここから】テスト用userInfoを新規登録画面作成後に消す
         val userInfo: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-
-        val editor = userInfo.edit()
-        editor.putString("userName","市川しょま")
-        editor.putString("objectId","SOcuIKHKOBVdjKn7")
-        editor.putString("questionId","")
-
-        editor.apply()
-
-        if (userInfo.getString("updateFriendsTime", null) == null) {
-            @SuppressLint("SimpleDateFormat")
-            val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-            editor.putString("updateFriendsTime", df.format(Date()))
-            editor.apply()
-        }
-        // TODO【ここまで】
 
     //uploadReceiveRecord()
 
