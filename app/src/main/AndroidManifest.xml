@@ -16,12 +16,6 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="HardcodedDebugMode">
-        <service
-                android:name=".ReceiveService"
-                android:enabled="true"
-                android:exported="true">
-        </service>
-
         <activity android:name=".startPageTest">
         </activity>
         <activity
@@ -38,13 +32,13 @@
         <activity android:name=".Confirmation">
         </activity>
         <activity android:name=".ServeView">
-        </activity>
-        <activity android:name=".ReceiveView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".ReceiveView">
         </activity>
         <activity android:name=".ReceiveDetailView">
         </activity>
