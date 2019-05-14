@@ -214,17 +214,19 @@ class ServeView : AppCompatActivity() {
             questionId = this.dataQuestions[num].objectId
             firstQImageId = questionId
 
+
             // 新しい質問画像を出す
             if (this.imgQuestions[questionId] != null) {
                 val img = this.imgQuestions[questionId] as ByteArray
                 questionImage.setImageBitmap(BitmapFactory.decodeByteArray(img, 0, img.size))
-                this.questionPhrase.text = "${this.questionTempPhrase}といえば？"
                 println("getting questions data is successed")
             } else {
                 //画像が読み込めない場合
                 questionImage.setImageResource(R.drawable.noquestionimage)
                 println("geting questions data is failed")
             }
+            this.questionPhrase.text = "${this.questionTempPhrase}といえば？"
+
             println("質問の性別条件：${questionGenderCondition}")
             if ( "男".equals(questionGenderCondition) ||("女".equals(questionGenderCondition)) ) {
                 specificGenderFriend = dataFriend.filter {
@@ -355,7 +357,7 @@ class ServeView : AppCompatActivity() {
         query.whereGreaterThan("createDate",userInfoSP.getString("updateFriendsTime", null).toDate())
         query.findInBackground { results, e ->
             // 友達がいた場合, 取得した友達をm_friendsに保存する
-            if (results.size > 0) {
+            if ( e == null && results.size > 0) {
                 for (i in 0..(results.size - 1)) {
                     //　自分のデータは登録しない
                     if (results[i].objectId != userInfoSP.getString("objectId", "")) {
