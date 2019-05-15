@@ -50,6 +50,15 @@
         </activity>
         <activity android:name=".ReceiveDetailView">
         </activity>
+        <activity android:name=".activity.SearchSchoolActivity">
+        </activity>
+        <activity android:name=".activity.ResisterSchoolsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

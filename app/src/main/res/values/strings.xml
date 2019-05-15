@@ -25,4 +25,12 @@
     <string name="menu_receive">ホメられた</string>
     <string name="menu_serve">ホメる</string>
     <string name="title_activity_ndreceive">ホメられた</string>
+
+    <string name="app_name">Hometoke</string>
+    <string name="elementary_school">小学校</string>
+    <string name="junior_highschool">中学校</string>
+    <string name="high_school">高等学校</string>
+    <string name="hint_elementary_sch">港区立ホメトケ小学校</string>
+    <string name="hint_junior_highsch">港区立ホメトケ中学校</string>
+    <string name="hint_highsch">東京都立ホメトケ高等学校</string>
 </resources>
