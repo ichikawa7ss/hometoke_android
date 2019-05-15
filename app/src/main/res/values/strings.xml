@@ -8,4 +8,21 @@
     <string name="stamp_flattext2">あなたは</string>
     <string name="stamp_flat_text3">に選ばれました</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_ndserve">ホメる</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_tools">Tools</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
+    <string name="menu_receive">ホメられた</string>
+    <string name="menu_serve">ホメる</string>
+    <string name="title_activity_ndreceive">ホメられた</string>
 </resources>

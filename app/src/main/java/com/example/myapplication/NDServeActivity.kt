@@ -1,32 +1,31 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
+import android.support.v4.view.GravityCompat
+import android.support.v7.app.ActionBarDrawerToggle
+import android.view.MenuItem
+import android.support.v4.widget.DrawerLayout
+import android.support.design.widget.NavigationView
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.view.Menu
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.nifcloud.mbaas.core.*
 import kotlinx.android.synthetic.main.activity_serve.*
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
-import android.widget.Toast
 
-
-
-
-class ServeView : AppCompatActivity() {
-    // TODO 質問に対する性別の条件を反映させる
-
-    // TODO タブの表示方法を調べる
-    // TODO ファイルをマージしてそのためのgitに格納する
-
-    // TODO パーツの適切な配置
-    // TODO オートレイアウト
-    // TODO 友達画像をいい感じにする
+class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     // DLした質問オブジェクト
     private var dataQuestions = listOf<NCMBObject>()
@@ -52,13 +51,64 @@ class ServeView : AppCompatActivity() {
     private var questionTitle : String = ""
     private var questionTempPhrase : String = ""
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_serve)
+        setContentView(R.layout.activity_ndserve)
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        val navView: NavigationView = findViewById(R.id.nav_view)
+        val toggle = ActionBarDrawerToggle(
+            this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        // ホメる画面の表示
+        showServeView()
+
+        navView.setNavigationItemSelectedListener(this)
+    }
+
+    override fun onBackPressed() {
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        // Handle navigation view item clicks here.
+        when (item.itemId) {
+            R.id.nav_serve -> {
+                // ホメるActivityへの遷移
+
+                // 次画面intentの生成
+                val intentServe = Intent(getApplication(), NDServeActivity::class.java)
+                // 次画面遷移
+                startActivity(intentServe)
+            }
+            R.id.nav_receive -> {
+                // ホメられるActivityへの遷移
+
+                // 次画面intentの生成
+                val intentReceive = Intent(getApplication(), NDReceiveActivity::class.java)
+                // 次画面遷移
+                startActivity(intentReceive)
+            }
+        }
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        drawerLayout.closeDrawer(GravityCompat.START)
+        return true
+    }
+
+    fun showServeView() {
 
         // singltonクラスの宣言
-        FriendData.onCreateApplication(applicationContext)
+//        FriendData.onCreateApplication(applicationContext)
 
         // NCMB初期化
         NCMB.initialize(applicationContext, "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1", "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7")
@@ -134,14 +184,14 @@ class ServeView : AppCompatActivity() {
             for (data in this.dataQuestions) {
                 // NCMBFileを宣言
                 val imageName = data.getString("objectId")
-                val file = NCMBFile("${imageName}.png")
+                val file = NCMBFile("$imageName.png")
 
                 // 質問画像をキャッシュへ格納
                 file.fetchInBackground { imgData, eFile ->
                     if (eFile == null) {
                         this.imgQuestions[imageName] = imgData
                         countQ += 1.0
-                        Log.d("[DEBUG]","現在の読み込み件数：${countQ}/${objs.size}")
+                        Log.d("[DEBUG]","現在の読み込み件数：$countQ/${objs.size}")
 
                         // 質問画像を70%読みこんだらインジケーターを止めて質問画像を表示
                         if ((countQ/doubleVal >= 0.8) && !noRepeat) {
@@ -193,7 +243,7 @@ class ServeView : AppCompatActivity() {
                         this.imgFriends[userObjId] = imgFriecdData
                     } else {
                         Log.e("[ERROR]",eFile.toString())
-                        Log.e("[ERROR]","[保存失敗]${userObjId}")
+                        Log.e("[ERROR]","友達画像のキャッシュへの保存に失敗しました　ユーザID：${userObjId}")
                     }
                 }
             }
@@ -214,7 +264,6 @@ class ServeView : AppCompatActivity() {
             questionId = this.dataQuestions[num].objectId
             firstQImageId = questionId
 
-
             // 新しい質問画像を出す
             if (this.imgQuestions[questionId] != null) {
                 val img = this.imgQuestions[questionId] as ByteArray
@@ -225,9 +274,11 @@ class ServeView : AppCompatActivity() {
                 questionImage.setImageResource(R.drawable.noquestionimage)
                 println("geting questions data is failed")
             }
+
+            //　質問の表示
             this.questionPhrase.text = "${this.questionTempPhrase}といえば？"
 
-            println("質問の性別条件：${questionGenderCondition}")
+            println("質問の性別条件：$questionGenderCondition")
             if ( "男".equals(questionGenderCondition) ||("女".equals(questionGenderCondition)) ) {
                 specificGenderFriend = dataFriend.filter {
                     it.getJSONObject("friendId").getString("gender") == questionGenderCondition
@@ -242,8 +293,8 @@ class ServeView : AppCompatActivity() {
             displayReceiver(receiverImage3, receiverName3,3)
         }
     }
-    
-    private fun displayReceiver(receiverImage: ImageView, receiverName:TextView, receiverNum: Int) {
+
+    private fun displayReceiver(receiverImage: ImageView, receiverName: TextView, receiverNum: Int) {
 
         // receiverを決めて表示する
         var isDoubling = true
@@ -303,7 +354,7 @@ class ServeView : AppCompatActivity() {
         val userInfoSP : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         val receiverName : String = receiverNames[receiverNum]
         if (receiverName.isEmpty()) {
-            val toast = Toast.makeText(this@ServeView, "このメンバーはホメられません", Toast.LENGTH_LONG)
+            val toast = Toast.makeText(this@NDServeActivity, "このメンバーはホメられません", Toast.LENGTH_LONG)
             toast.show()
         } else {
             // ホメるテーブル格納用のNCMBObjectを作成
@@ -317,7 +368,10 @@ class ServeView : AppCompatActivity() {
             obj.put("receiverId",objectIds[receiverNum] )
             obj.put("questionPhrase",this.questionTempPhrase)
 
-            // データストアへの保存を実施
+            val toast = Toast.makeText(this@NDServeActivity, "${receiverName}さんを${questionTitle}とホメました！", Toast.LENGTH_LONG)
+            toast.show()
+            decideQuestion()
+
             // データストアへの保存を実施
             obj.saveInBackground{ error ->
                 if (error != null) {
@@ -326,9 +380,6 @@ class ServeView : AppCompatActivity() {
                 } else {
                     Log.d("[DEBUG]", obj.toString())
                     Log.d("[DEBUG]", "e_serveデータ保存成功")
-                    val toast = Toast.makeText(this@ServeView, "${receiverName}さんを${questionTitle}とホメました！", Toast.LENGTH_LONG)
-                    toast.show()
-                    decideQuestion()
                 }
             }
         }
@@ -407,17 +458,4 @@ class ServeView : AppCompatActivity() {
         }
         return date
     }
-
-    fun getSpecificGenderFriends (genderCondistion : String)  {
-        // 友達リスト内の友達一人一人をチェック
-        for (friend in dataFriend) {
-            // 友達の性別を取得
-            val friendGender = friend.getString("gender")
-            // 質問属性が”すべて” もしくは友達の性別と同じなら返り値に追加
-            if (genderCondistion == "すべて" || genderCondistion == friendGender) {
-                //specificGenderFriend.
-            }
-        }
-    }
 }
-

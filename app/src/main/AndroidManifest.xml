@@ -16,6 +16,21 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="HardcodedDebugMode">
+        <activity
+                android:name=".NDReceiveActivity"
+                android:label="@string/title_activity_ndreceive"
+                android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".NDServeActivity"
+                android:label="@string/title_activity_ndserve"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity android:name=".startPageTest">
         </activity>
         <activity
@@ -32,13 +47,6 @@
         <activity android:name=".Confirmation">
         </activity>
         <activity android:name=".ServeView">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-        <activity android:name=".ReceiveView">
         </activity>
         <activity android:name=".ReceiveDetailView">
         </activity>

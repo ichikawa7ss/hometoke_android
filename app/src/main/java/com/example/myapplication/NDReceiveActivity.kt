@@ -1,62 +1,122 @@
 package com.example.myapplication
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.view.GravityCompat
+import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v4.widget.DrawerLayout
+import android.support.design.widget.NavigationView
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
+import android.view.*
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import com.example.myapplication.Constants.Companion.READ_CELL
-import com.example.myapplication.Constants.Companion.UNREAD_CELL
+import android.widget.Toast
 import com.example.myapplication.db.ReceiveOpenHelper
 import com.example.myapplication.db.ReceiveRowParser
 import com.example.myapplication.entity.ReceiveEntity
 import com.nifcloud.mbaas.core.*
-import kotlinx.android.synthetic.main.activity_receive_view.*
+import kotlinx.android.synthetic.main.content_ndreceive.*
 import org.jetbrains.anko.db.SqlOrderDirection
 import org.jetbrains.anko.db.insert
 import org.jetbrains.anko.db.select
-import org.jetbrains.anko.db.update
 import java.lang.Exception
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.schedule
 
-class ReceiveView : AppCompatActivity() {
+class NDReceiveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    var MyName = String()
+    private var myName = String()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NCMB.initialize(applicationContext, "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1", "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7")
-        setContentView(R.layout.activity_receive_view)
 
-        MyName = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("userName","")
+        print("マジでなんなの？？？？？？？？")
+        setContentView(R.layout.activity_ndreceive)
+        val toolbar: Toolbar = findViewById(R.id.toolbar_receive)
+        setSupportActionBar(toolbar)
+
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout_receive)
+        val navView: NavigationView = findViewById(R.id.nav_view_receive)
+        val toggle = ActionBarDrawerToggle(
+            this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        Log.d("[DEBUG]", "ほめられる画面を表示します")
+
+        // ほめられる画面表示
+        showReceiveView()
+
+        navView.setNavigationItemSelectedListener(this)
+    }
+
+    override fun onBackPressed() {
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout_receive)
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        // Handle navigation view item clicks here.
+        when (item.itemId) {
+            R.id.nav_serve -> {
+                // ホメるActivityへの遷移
+
+                // 次画面intentの生成
+                val intentServe = Intent(application, NDServeActivity::class.java)
+                // 次画面遷移
+                startActivity(intentServe)
+            }
+            R.id.nav_receive -> {
+                // ホメられるActivityへの遷移
+
+                // 次画面intentの生成
+                val intentReceive = Intent(application, NDReceiveActivity::class.java)
+                // 次画面遷移
+                startActivity(intentReceive)
+            }
+        }
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout_receive)
+        drawerLayout.closeDrawer(GravityCompat.START)
+        return true
+    }
+
+    fun showReceiveView() {
+        NCMB.initialize(applicationContext, "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1", "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7")
+
+        myName = PreferenceManager.getDefaultSharedPreferences(applicationContext).getString("userName","")
 
         // SQLiteのデータ読み込み・listView表示
         loadListView()
+        Log.d("[DEBUG]", "ListViewを表示します！")
+
 
         // 30秒ごとにSQLiteを更新
         Timer().schedule(30000, 30000) {
             Log.d("[DEBUG]", "タイマー起動")
             uploadReceiveLocalRecord()
+            Log.d("[DEBUG]", "テーブルを更新します!")
+
         }
 
         swipeRefreshLayout.setOnRefreshListener {
             loadListView()
             swipeRefreshLayout.isRefreshing = false
+            Log.d("[DEBUG]", "スワイプしまーす！")
         }
     }
 
@@ -75,29 +135,29 @@ class ReceiveView : AppCompatActivity() {
                 .orderBy("_id", SqlOrderDirection.DESC)
                 .parseList(ReceiveRowParser())
 
-            listView.adapter = ReceiveAdapter(this@ReceiveView, list)
+            listView.adapter = ReceiveAdapter(this@NDReceiveActivity, list)
 
 
             // リストがタップされたら手紙画面へ遷移するための設定
-            listView.setOnItemClickListener { parent, view, position, id ->
-                val intent = Intent(this@ReceiveView, ReceiveDetailView::class.java)
+            listView.setOnItemClickListener { _, _, position, _ ->
+                val intent = Intent(this@NDReceiveActivity, ReceiveDetailView::class.java)
 
                 // タップされた position の情報を取得して加工
-                val selected_imgid = list[position].stampImageBlob
-                val selected_title = "「" + list[position].questionTitle + "」"
-                val selected_server = "From " + list[position].serverTitle
-                val selected_user_name = "${MyName}さん"
-                val selected_question = list[position].questionPhrase
-                val selected_readFlg = list[position].readFlg
+                val selectedImgId = list[position].stampImageBlob
+                val selectedTitle = "「" + list[position].questionTitle + "」"
+                val selectedServer = "From " + list[position].serverTitle
+                val selectedUserName = "${myName}さん"
+                val selectedQuestion = list[position].questionPhrase
+                val selectedReadFlg = list[position].readFlg
 
                 // intent = 画面間で渡される入れ物 に表示したい情報をセット
                 intent.putExtra("intent_id", list[position]._id)
-                intent.putExtra("intent_imgid", selected_imgid)
-                intent.putExtra("intent_title", selected_title)
-                intent.putExtra("intent_server", selected_server)
-                intent.putExtra("intent_user_name", selected_user_name)
-                intent.putExtra("intent_question", selected_question)
-                intent.putExtra("intent_readFlg", selected_readFlg)
+                intent.putExtra("intent_imgid", selectedImgId)
+                intent.putExtra("intent_title", selectedTitle)
+                intent.putExtra("intent_server", selectedServer)
+                intent.putExtra("intent_user_name", selectedUserName)
+                intent.putExtra("intent_question", selectedQuestion)
+                intent.putExtra("intent_readFlg", selectedReadFlg)
 
                 // intent を手紙画面へ
                 startActivity(intent)
@@ -108,10 +168,10 @@ class ReceiveView : AppCompatActivity() {
 
     // ホメられたデータをSQLiteに書き込み
     // 更新されてないデータだけを検索して新規登録
-    fun uploadReceiveLocalRecord() {
+    private fun uploadReceiveLocalRecord() {
 
         // preference,editer,dataFormatの用意
-        val pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+        val pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         val editor = pref.edit()
 
         @SuppressLint("SimpleDateFormat")
@@ -130,9 +190,11 @@ class ReceiveView : AppCompatActivity() {
         val query = NCMBQuery<NCMBObject>("e_serve")
 
         query.whereEqualTo("receiverId", myObjectID)
+        // TODO あとで消す
+//        editor.putString("updateReceiveTableTime", df.format(Date())).apply()
         // createDateが更新時より新しいデータだけを読み込み
         query.whereGreaterThan("createDate",pref.getString("updateReceiveTableTime", null).toDate())
-        query.addOrderByAscending("ascendingKey");
+        query.addOrderByAscending("ascendingKey")
         query.findInBackground { objs, error ->
             if (error == null && objs.size > 0){
                 // 異常なエラーがなければ
@@ -144,7 +206,7 @@ class ReceiveView : AppCompatActivity() {
                 for (obj in newReceiveData) {
                     // NCMBFileを宣言
                     val imageName = obj.getString("questionId")
-                    val fileName = NCMBFile("${imageName}.png")
+                    val fileName = NCMBFile("$imageName.png")
 
                     // 質問画像をBITMAPへ変化してSQLiteに格納
                     fileName.fetchInBackground { imgData, error ->
@@ -175,7 +237,7 @@ class ReceiveView : AppCompatActivity() {
                                 Log.e("[ERROR]",e.toString())
                             }
 
-                        Log.d("[DEBUG]", "アプリ内DBに保存しました")
+                            Log.d("[DEBUG]", "アプリ内DBに保存しました")
 
                         } else {
                             Log.e("[ERROR]",error.toString())
@@ -207,7 +269,6 @@ class ReceiveView : AppCompatActivity() {
     }
 }
 
-
 // 既読のリスト
 data class ViewHolder(
     val holderImageView: ImageView,
@@ -225,7 +286,7 @@ data class UnreadViewHolder(
 
 
 class ReceiveAdapter (private val context: Context,
-                        private val ReceiveData:List<ReceiveEntity>): BaseAdapter() {
+                      private val ReceiveData:List<ReceiveEntity>): BaseAdapter() {
 
     // inflater という謎の必須設定
     private var inflater : LayoutInflater? = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater?
@@ -236,7 +297,7 @@ class ReceiveAdapter (private val context: Context,
 
         var view = convertView
 
-        if (getItemViewType(position) == READ_CELL) {
+        if (getItemViewType(position) == Constants.READ_CELL) {
             // ViewHolder に値があれば再利用して表示
             // なければ新たに取得し、ViewHolder へ格納
             if (view == null) {
@@ -262,7 +323,7 @@ class ReceiveAdapter (private val context: Context,
             viewHolder.holderserver_user.text = "From " + ReceiveData[position].serverTitle
             viewHolder.holderquestionPhraseLabel.text = ReceiveData[position].questionPhrase
             viewHolder.holderServeDate.text = ReceiveData[position].serveDate
-        } else if (getItemViewType(position) == UNREAD_CELL) {
+        } else if (getItemViewType(position) == Constants.UNREAD_CELL) {
             // ViewHolder に値があれば再利用して表示
             // なければ新たに取得し、ViewHolder へ格納
             if (view == null) {
@@ -296,9 +357,9 @@ class ReceiveAdapter (private val context: Context,
 
     override fun getItemViewType(position: Int): Int {
         if (ReceiveData[position].readFlg == "0") {
-            return UNREAD_CELL
+            return Constants.UNREAD_CELL
         } else {
-            return READ_CELL
+            return Constants.READ_CELL
         }
     }
 }
