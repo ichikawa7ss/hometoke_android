@@ -16,7 +16,7 @@ import com.nifcloud.mbaas.core.NCMB
 import com.nifcloud.mbaas.core.NCMBFile
 import com.nifcloud.mbaas.core.NCMBAcl
 import android.graphics.BitmapFactory
-import android.view.View
+import com.example.myapplication.activity.RegisterSchoolsActivity
 import com.isseiaoki.simplecropview.CropImageView
 import java.io.ByteArrayOutputStream
 
@@ -164,7 +164,7 @@ class SelectPicture : AppCompatActivity() {
     private fun moveToConfirmation () {
 
         // 次画面intentの生成
-        val confirmationIntent = Intent(getApplication(), Confirmation::class.java)
+        val confirmationIntent = Intent(getApplication(), RegisterSchoolsActivity::class.java)
 
         // データのセット
         confirmationIntent.putExtra("userNm", intent.getStringExtra("userNm"))

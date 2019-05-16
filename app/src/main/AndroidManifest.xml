@@ -20,11 +20,6 @@
                 android:name=".NDReceiveActivity"
                 android:label="@string/title_activity_ndreceive"
                 android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity
                 android:name=".NDServeActivity"
@@ -52,7 +47,7 @@
         </activity>
         <activity android:name=".activity.SearchSchoolActivity">
         </activity>
-        <activity android:name=".activity.ResisterSchoolsActivity">
+        <activity android:name=".activity.RegisterSchoolsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

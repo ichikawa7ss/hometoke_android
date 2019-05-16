@@ -10,7 +10,6 @@ import com.example.myapplication.db.ReceiveOpenHelper
 import com.nifcloud.mbaas.core.*
 import kotlinx.android.synthetic.main.activity_confirmation.*
 import org.jetbrains.anko.db.insert
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 

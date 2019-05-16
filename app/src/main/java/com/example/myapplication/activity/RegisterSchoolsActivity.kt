@@ -6,11 +6,12 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import com.example.myapplication.Confirmation
 import com.example.myapplication.R
 
 /* 学校情報登録画面のActivity*/
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-class ResisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
+class RegisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
 
     companion object {
         const val EXTRA_SCHOOL_TYPE = "com.example.hometoke.SCHOOL_TYPE"
@@ -19,7 +20,7 @@ class ResisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_resister_schools)
+        setContentView(R.layout.activity_register_schools)
 
         // 小学校名入力フィールド
         val inputElementarySch: EditText = findViewById(R.id.elementary_sch)
@@ -64,6 +65,29 @@ class ResisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
                     intent.putExtra(EXTRA_SCHOOL_TYPE, requestCode)
 
                     startActivityForResult(intent, requestCode)
+                }
+                
+                R.id.moveToConfirmationViewBtn -> {
+                    // 次へボタンが押下された場合
+                    val intent = Intent(this, Confirmation::class.java)
+
+                    // データのセット
+                    // TODO ・遷移に持たせる　・Preferenceに持たせる　を設計する
+                    intent.putExtra("userNm", intent.getStringExtra("userNm"))
+                    intent.putExtra("userSex", intent.getStringExtra("userSex"))
+                    intent.putExtra("userBirthYear", intent.getStringExtra("userBirthYear"))
+                    intent.putExtra("userBirthMonth", intent.getStringExtra("userBirthMonth"))
+                    intent.putExtra("userBirthDay", intent.getStringExtra("userBirthDay"))
+                    intent.putExtra("elementarySchool", intent.getStringExtra("elementarySchool"))
+                    intent.putExtra("juniorHighSchool", intent.getStringExtra("juniorHighSchool"))
+                    intent.putExtra("highSchool", intent.getStringExtra("highSchool"))
+                    intent.putExtra("elementalySchoolEntryYear", intent.getStringExtra("elementalySchoolEntryYear"))
+                    intent.putExtra("juniorHighSchoolEntryYear", intent.getStringExtra("juniorHighSchoolEntryYear"))
+                    intent.putExtra("highSchoolEntryYear", intent.getStringExtra("highSchoolEntryYear"))
+                    intent.putExtra("mailAddress", intent.getStringExtra("mailAddress"))
+                    intent.putExtra("password", intent.getStringExtra("password"))
+
+                    startActivity(intent)
                 }
             }
         }

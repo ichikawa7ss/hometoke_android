@@ -1,6 +1,5 @@
 package com.example.myapplication.entity
 
-import java.util.*
 
 data class ReceiveEntity (val _id: Int?,
                           val questionTitle: String?,

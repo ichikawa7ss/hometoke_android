@@ -3,7 +3,6 @@ package com.example.myapplication
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_sign_up_view.*
-// import android.util.Log
 import android.content.Intent
 import android.support.v7.app.AlertDialog
 import android.text.InputType

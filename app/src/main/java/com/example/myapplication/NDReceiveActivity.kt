@@ -3,7 +3,6 @@ package com.example.myapplication
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -18,7 +17,6 @@ import android.view.*
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import com.example.myapplication.db.ReceiveOpenHelper
 import com.example.myapplication.db.ReceiveRowParser
 import com.example.myapplication.entity.ReceiveEntity
@@ -191,7 +189,7 @@ class NDReceiveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
         query.whereEqualTo("receiverId", myObjectID)
         // TODO あとで消す
-//        editor.putString("updateReceiveTableTime", df.format(Date())).apply()
+        editor.putString("updateReceiveTableTime", df.format(Date())).apply()
         // createDateが更新時より新しいデータだけを読み込み
         query.whereGreaterThan("createDate",pref.getString("updateReceiveTableTime", null).toDate())
         query.addOrderByAscending("ascendingKey")
