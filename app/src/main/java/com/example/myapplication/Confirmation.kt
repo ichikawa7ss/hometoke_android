@@ -43,7 +43,7 @@ class Confirmation : AppCompatActivity() {
         juniorHighSchoolEntryYear.text = intent.getStringExtra("juniorHighSchoolEntryYear")
         highSchoolEntryYear.text = intent.getStringExtra("highSchoolEntryYear")
         mailAddress.text = intent.getStringExtra("mailAddress")
-        this.password = intent.getStringExtra("password")
+        //this.password = intent.getStringExtra("password")
 
         // 完了ボタン押下
         CompleteBtn.setOnClickListener() {

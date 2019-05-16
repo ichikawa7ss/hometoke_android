@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.EditText
 import com.example.myapplication.Confirmation
 import com.example.myapplication.R
+import kotlinx.android.synthetic.main.activity_register_schools.*
 
 /* 学校情報登録画面のActivity*/
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
@@ -33,6 +34,10 @@ class RegisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
         // 高等学校名入力フィールド
         val inputHighSch: EditText = findViewById(R.id.highsch)
         inputHighSch.setOnClickListener(this)
+
+        moveToConfirmationViewBtn.setOnClickListener {
+            moveToConfirmationView()
+        }
     }
 
     // クリックイベント
@@ -58,6 +63,7 @@ class RegisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
                 }
 
                 R.id.highsch -> {
+                    println("高校ボタン押下")
                     // 高等学校のテキストフィールドが選択された場合
                     val intent = Intent(this, SearchSchoolActivity::class.java)
                     // 小中高の区別にRequestCodeを使用
@@ -65,29 +71,6 @@ class RegisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
                     intent.putExtra(EXTRA_SCHOOL_TYPE, requestCode)
 
                     startActivityForResult(intent, requestCode)
-                }
-                
-                R.id.moveToConfirmationViewBtn -> {
-                    // 次へボタンが押下された場合
-                    val intent = Intent(this, Confirmation::class.java)
-
-                    // データのセット
-                    // TODO ・遷移に持たせる　・Preferenceに持たせる　を設計する
-                    intent.putExtra("userNm", intent.getStringExtra("userNm"))
-                    intent.putExtra("userSex", intent.getStringExtra("userSex"))
-                    intent.putExtra("userBirthYear", intent.getStringExtra("userBirthYear"))
-                    intent.putExtra("userBirthMonth", intent.getStringExtra("userBirthMonth"))
-                    intent.putExtra("userBirthDay", intent.getStringExtra("userBirthDay"))
-                    intent.putExtra("elementarySchool", intent.getStringExtra("elementarySchool"))
-                    intent.putExtra("juniorHighSchool", intent.getStringExtra("juniorHighSchool"))
-                    intent.putExtra("highSchool", intent.getStringExtra("highSchool"))
-                    intent.putExtra("elementalySchoolEntryYear", intent.getStringExtra("elementalySchoolEntryYear"))
-                    intent.putExtra("juniorHighSchoolEntryYear", intent.getStringExtra("juniorHighSchoolEntryYear"))
-                    intent.putExtra("highSchoolEntryYear", intent.getStringExtra("highSchoolEntryYear"))
-                    intent.putExtra("mailAddress", intent.getStringExtra("mailAddress"))
-                    intent.putExtra("password", intent.getStringExtra("password"))
-
-                    startActivity(intent)
                 }
             }
         }
@@ -121,5 +104,30 @@ class RegisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
             }
 
         }
+    }
+
+    fun moveToConfirmationView() {
+        println("次へボタン押下")
+
+        // 次へボタンが押下された場合
+        val confirmationIntent = Intent(this, Confirmation::class.java)
+
+        // データのセット
+        // TODO ・遷移に持たせる　・Preferenceに持たせる　を設計する
+        confirmationIntent.putExtra("userNm", intent.getStringExtra("userNm"))
+        confirmationIntent.putExtra("userSex", intent.getStringExtra("userSex"))
+        confirmationIntent.putExtra("userBirthYear", intent.getStringExtra("userBirthYear"))
+        confirmationIntent.putExtra("userBirthMonth", intent.getStringExtra("userBirthMonth"))
+        confirmationIntent.putExtra("userBirthDay", intent.getStringExtra("userBirthDay"))
+        confirmationIntent.putExtra("elementarySchool", intent.getStringExtra("elementarySchool"))
+        confirmationIntent.putExtra("juniorHighSchool", intent.getStringExtra("juniorHighSchool"))
+        confirmationIntent.putExtra("highSchool", intent.getStringExtra("highSchool"))
+        confirmationIntent.putExtra("elementalySchoolEntryYear", intent.getStringExtra("elementalySchoolEntryYear"))
+        confirmationIntent.putExtra("juniorHighSchoolEntryYear", intent.getStringExtra("juniorHighSchoolEntryYear"))
+        confirmationIntent.putExtra("highSchoolEntryYear", intent.getStringExtra("highSchoolEntryYear"))
+        confirmationIntent.putExtra("mailAddress", intent.getStringExtra("mailAddress"))
+        confirmationIntent.putExtra("password", intent.getStringExtra("password"))
+
+        startActivity(confirmationIntent)
     }
 }
