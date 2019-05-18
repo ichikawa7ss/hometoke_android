@@ -1,9 +1,11 @@
 package com.example.myapplication
 
+import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_sign_up_view.*
 import android.content.Intent
+import android.content.SharedPreferences
 import android.support.v7.app.AlertDialog
 import android.text.InputType
 
@@ -157,7 +159,25 @@ class SignUpView : AppCompatActivity() {
         // 次画面intentの生成
         val intent = Intent(getApplication(), SelectPicture::class.java)
 
-        // データのセット
+        // データをPreferenceにセット
+        val dataStore: SharedPreferences = getSharedPreferences("DataStore", Context.MODE_PRIVATE)
+        val editor = dataStore.edit()
+
+        editor.putString("userName",userNm.text.toString())
+        editor.putString("gender",this.userSex)
+        editor.putString("entryYear","2000")
+        editor.putString("userBirthYear", this.year.toString())
+        editor.putString("userBirthMonth", this.month.toString())
+        editor.putString("userBirthDay", this.day.toString())
+        editor.putString("elementalySchoolEntryYear", this.elementalySchoolEntryYear)
+        editor.putString("juniorHighSchoolEntryYear", this.juniorHighSchoolEntryYear)
+        editor.putString("highSchoolEntryYear", this.highSchoolEntryYear)
+        editor.putString("mailAddress",userMailAddress.text.toString())
+        editor.putString("password",userMailAddress.text.toString())
+
+        editor.apply()
+
+        /*
         intent.putExtra("userNm", userNm.text.toString())
         intent.putExtra("userSex", this.userSex)
         intent.putExtra("userBirthYear", this.year.toString())
@@ -168,6 +188,7 @@ class SignUpView : AppCompatActivity() {
         intent.putExtra("highSchoolEntryYear", this.highSchoolEntryYear)
         intent.putExtra("mailAddress", userMailAddress.text.toString())
         intent.putExtra("password", userPassword.text.toString())
+        */
 
         // 次画面遷移
         startActivity(intent);

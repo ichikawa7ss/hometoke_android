@@ -38,7 +38,6 @@ class NDReceiveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        print("マジでなんなの？？？？？？？？")
         setContentView(R.layout.activity_ndreceive)
         val toolbar: Toolbar = findViewById(R.id.toolbar_receive)
         setSupportActionBar(toolbar)

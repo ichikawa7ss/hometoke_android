@@ -1,7 +1,9 @@
 package com.example.myapplication
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
@@ -30,20 +32,25 @@ class Confirmation : AppCompatActivity() {
             "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7"
         )
 
+        // Preferenceの設定
+        val dataStore = getSharedPreferences("DataStore", Context.MODE_PRIVATE)
+        val editor = dataStore.edit()
+
+
         // 前画面からのデータ受け取り
-        userNm.text = intent.getStringExtra("userNm")
-        userSex.text = intent.getStringExtra("userSex")
-        birthYear.text = intent.getStringExtra("userbirthYear")
-        birthMonth.text = intent.getStringExtra("userbirthMonth")
-        birthDay.text = intent.getStringExtra("userbirthDay")
-        ElementarySchool.text = intent.getStringExtra("elementarySchool")
-        JuniorHighSchool.text = intent.getStringExtra("juniorHighSchool")
-        HighSchool.text = intent.getStringExtra("highSchool")
-        elementarySchoolEntryYear.text = intent.getStringExtra("elementalySchoolEntryYear")
-        juniorHighSchoolEntryYear.text = intent.getStringExtra("juniorHighSchoolEntryYear")
-        highSchoolEntryYear.text = intent.getStringExtra("highSchoolEntryYear")
-        mailAddress.text = intent.getStringExtra("mailAddress")
-        //this.password = intent.getStringExtra("password")
+        userNm.text = dataStore.getString("userNm","")
+        userSex.text = dataStore.getString("userSex","")
+        birthYear.text = dataStore.getString("userbirthYear","")
+        birthMonth.text = dataStore.getString("userbirthMonth","")
+        birthDay.text = dataStore.getString("userbirthDay","")
+        ElementarySchool.text = dataStore.getString("elementarySchool","")
+        JuniorHighSchool.text = dataStore.getString("juniorHighSchool","")
+        HighSchool.text = dataStore.getString("highSchool","")
+        elementarySchoolEntryYear.text = dataStore.getString("elementalySchoolEntryYear","")
+        juniorHighSchoolEntryYear.text = dataStore.getString("juniorHighSchoolEntryYear","")
+        highSchoolEntryYear.text = dataStore.getString("highSchoolEntryYear","")
+        mailAddress.text = dataStore.getString("mailAddress","")
+        this.password = dataStore.getString("password","")
 
         // 完了ボタン押下
         CompleteBtn.setOnClickListener() {
@@ -238,15 +245,16 @@ class Confirmation : AppCompatActivity() {
     // SharedPrefarenceへの登録
     private fun saveSharedPrefarence() {
         // preference,editer,dataFormatの用意
-        val pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        val editor = pref.edit()
+        // Preferenceの設定
+        val dataStore = getSharedPreferences("DataStore", Context.MODE_PRIVATE)
+        val editor = dataStore.edit()
 
         @SuppressLint("SimpleDateFormat")
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 
+        /*
         editor.putString("userName",userNm.text.toString())
         editor.putString("objectId",this.objectId)
-        editor.putString("loginFlg","1")
         editor.putString("gender",userSex.text.toString())
         editor.putString("elementarySchool",ElementarySchool.text.toString())
         editor.putString("juniorHighSchool",JuniorHighSchool.text.toString())
@@ -255,12 +263,23 @@ class Confirmation : AppCompatActivity() {
         editor.putString("registTitle","ホメ界の新星")
         editor.putString("questionId","EhjSthKAdd1zLtnR")
         editor.putString("updateReceiveTableTime", df.format(Date())).apply()
+        */
+
+        editor.putString("objectId",this.objectId)
+        editor.putString("registTitle","ホメ界の新星")
+        editor.putString("updateReceiveTableTime", df.format(Date())).apply()
+
+
     }
 
     // 次画面遷移
     private fun moveToTutorialView() {
+
         // 次画面intentの生成
-        val intent = Intent(getApplication(), tutorialPageMock::class.java)
+
+        // TODO チュートリアル画面の作成
+        val intent = Intent(getApplication(), NDServeActivity::class.java)
+            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         // 次画面遷移
         startActivity(intent);
     }
