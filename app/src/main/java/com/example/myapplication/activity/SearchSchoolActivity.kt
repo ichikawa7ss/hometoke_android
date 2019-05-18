@@ -27,7 +27,7 @@ class SearchSchoolActivity : AppCompatActivity() {
         setContentView(R.layout.activity_serch_school)
 
         val intent = intent
-        val schoolType = intent.extras.getInt(ResisterSchoolsActivity.EXTRA_SCHOOL_TYPE)
+        val schoolType = intent.extras.getInt(RegisterSchoolsActivity.EXTRA_SCHOOL_TYPE)
 
         // SearchView
         val searchSchools: SearchView = findViewById(R.id.search_school)
@@ -89,7 +89,7 @@ class SearchSchoolActivity : AppCompatActivity() {
 
             // 選択された学校名をResisterSchoolsActivityに渡す
             val intentSchSearch = Intent()
-            intentSchSearch.putExtra(ResisterSchoolsActivity.EXTRA_SCHOOL_TYPE, school)
+            intentSchSearch.putExtra(RegisterSchoolsActivity.EXTRA_SCHOOL_TYPE, school)
             setResult(Activity.RESULT_OK, intentSchSearch)
 
             // Activityを終了し、ResisterSchoolsActivityに遷移

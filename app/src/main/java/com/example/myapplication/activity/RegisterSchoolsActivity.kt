@@ -6,11 +6,13 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import com.example.myapplication.Confirmation
 import com.example.myapplication.R
+import kotlinx.android.synthetic.main.activity_register_schools.*
 
 /* 学校情報登録画面のActivity*/
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-class ResisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
+class RegisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
 
     companion object {
         const val EXTRA_SCHOOL_TYPE = "com.example.hometoke.SCHOOL_TYPE"
@@ -19,7 +21,7 @@ class ResisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_resister_schools)
+        setContentView(R.layout.activity_register_schools)
 
         // 小学校名入力フィールド
         val inputElementarySch: EditText = findViewById(R.id.elementary_sch)
@@ -32,6 +34,10 @@ class ResisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
         // 高等学校名入力フィールド
         val inputHighSch: EditText = findViewById(R.id.highsch)
         inputHighSch.setOnClickListener(this)
+
+        moveToConfirmationViewBtn.setOnClickListener {
+            moveToConfirmationView()
+        }
     }
 
     // クリックイベント
@@ -57,6 +63,7 @@ class ResisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
                 }
 
                 R.id.highsch -> {
+                    println("高校ボタン押下")
                     // 高等学校のテキストフィールドが選択された場合
                     val intent = Intent(this, SearchSchoolActivity::class.java)
                     // 小中高の区別にRequestCodeを使用
@@ -97,5 +104,30 @@ class ResisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
             }
 
         }
+    }
+
+    fun moveToConfirmationView() {
+        println("次へボタン押下")
+
+        // 次へボタンが押下された場合
+        val confirmationIntent = Intent(this, Confirmation::class.java)
+
+        // データのセット
+        // TODO ・遷移に持たせる　・Preferenceに持たせる　を設計する
+        confirmationIntent.putExtra("userNm", intent.getStringExtra("userNm"))
+        confirmationIntent.putExtra("userSex", intent.getStringExtra("userSex"))
+        confirmationIntent.putExtra("userBirthYear", intent.getStringExtra("userBirthYear"))
+        confirmationIntent.putExtra("userBirthMonth", intent.getStringExtra("userBirthMonth"))
+        confirmationIntent.putExtra("userBirthDay", intent.getStringExtra("userBirthDay"))
+        confirmationIntent.putExtra("elementarySchool", intent.getStringExtra("elementarySchool"))
+        confirmationIntent.putExtra("juniorHighSchool", intent.getStringExtra("juniorHighSchool"))
+        confirmationIntent.putExtra("highSchool", intent.getStringExtra("highSchool"))
+        confirmationIntent.putExtra("elementalySchoolEntryYear", intent.getStringExtra("elementalySchoolEntryYear"))
+        confirmationIntent.putExtra("juniorHighSchoolEntryYear", intent.getStringExtra("juniorHighSchoolEntryYear"))
+        confirmationIntent.putExtra("highSchoolEntryYear", intent.getStringExtra("highSchoolEntryYear"))
+        confirmationIntent.putExtra("mailAddress", intent.getStringExtra("mailAddress"))
+        confirmationIntent.putExtra("password", intent.getStringExtra("password"))
+
+        startActivity(confirmationIntent)
     }
 }

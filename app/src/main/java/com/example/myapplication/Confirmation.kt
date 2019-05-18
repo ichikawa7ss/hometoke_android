@@ -10,7 +10,6 @@ import com.example.myapplication.db.ReceiveOpenHelper
 import com.nifcloud.mbaas.core.*
 import kotlinx.android.synthetic.main.activity_confirmation.*
 import org.jetbrains.anko.db.insert
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -44,7 +43,7 @@ class Confirmation : AppCompatActivity() {
         juniorHighSchoolEntryYear.text = intent.getStringExtra("juniorHighSchoolEntryYear")
         highSchoolEntryYear.text = intent.getStringExtra("highSchoolEntryYear")
         mailAddress.text = intent.getStringExtra("mailAddress")
-        this.password = intent.getStringExtra("password")
+        //this.password = intent.getStringExtra("password")
 
         // 完了ボタン押下
         CompleteBtn.setOnClickListener() {
