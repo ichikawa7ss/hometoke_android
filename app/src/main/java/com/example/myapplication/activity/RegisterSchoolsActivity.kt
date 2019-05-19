@@ -114,7 +114,7 @@ class RegisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
 
         // データのセット
         // TODO ・遷移に持たせる　・Preferenceに持たせる　を設計する
-        confirmationIntent.putExtra("userNm", intent.getStringExtra("userNm"))
+        confirmationIntent.putExtra("userName", intent.getStringExtra("userName"))
         confirmationIntent.putExtra("userSex", intent.getStringExtra("userSex"))
         confirmationIntent.putExtra("userBirthYear", intent.getStringExtra("userBirthYear"))
         confirmationIntent.putExtra("userBirthMonth", intent.getStringExtra("userBirthMonth"))

@@ -13,7 +13,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (loginCheck()!!) { // SignUpView に遷移
+        var check = loginCheck()
+        if (check == false) { // SignUpView に遷移
             val intent = Intent(getApplicationContext(), SignUpView::class.java)
             startActivity(intent)
         } else { // NDServeActivity に遷移

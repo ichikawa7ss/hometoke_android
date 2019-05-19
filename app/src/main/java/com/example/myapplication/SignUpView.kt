@@ -31,6 +31,12 @@ class SignUpView : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up_view)
 
+        val PREFERENCES_FILE_NAME = "preference"
+
+        val settings = getSharedPreferences(PREFERENCES_FILE_NAME, 0) // 0 -> MODE_PRIVATE
+        val editor = settings.edit()
+        editor.putLong("logged-in", 1).apply()
+
         // 入力値の型の指定
         birthYear.inputType = InputType.TYPE_CLASS_NUMBER
         birthMonth.inputType = InputType.TYPE_CLASS_NUMBER
@@ -130,7 +136,7 @@ class SignUpView : AppCompatActivity() {
 
     // 必須入力チェック
     private fun checkRequiredVal() : Int {
-        if (userNm.text.length == 0 || userMailAddress.text.length == 0
+        if (userName.text.length == 0 || userMailAddress.text.length == 0
             || userPassword.text.length == 0 || userPasswordConfirm.text.length == 0 ) {
             showAlert("エラー", "必須項目を入力してください")
             return 1
@@ -163,7 +169,7 @@ class SignUpView : AppCompatActivity() {
         val dataStore: SharedPreferences = getSharedPreferences("DataStore", Context.MODE_PRIVATE)
         val editor = dataStore.edit()
 
-        editor.putString("userName",userNm.text.toString())
+        editor.putString("userName",userName.text.toString())
         editor.putString("gender",this.userSex)
         editor.putString("entryYear","2000")
         editor.putString("userBirthYear", this.year.toString())
@@ -178,7 +184,7 @@ class SignUpView : AppCompatActivity() {
         editor.apply()
 
         /*
-        intent.putExtra("userNm", userNm.text.toString())
+        intent.putExtra("userName", userName.text.toString())
         intent.putExtra("userSex", this.userSex)
         intent.putExtra("userBirthYear", this.year.toString())
         intent.putExtra("userBirthMonth", this.month.toString())

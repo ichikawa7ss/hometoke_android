@@ -38,8 +38,8 @@ class Confirmation : AppCompatActivity() {
 
 
         // 前画面からのデータ受け取り
-        userNm.text = dataStore.getString("userNm","")
-        userSex.text = dataStore.getString("userSex","")
+        userName.text = dataStore.getString("userName","")
+        userSex.text = dataStore.getString("gender","")
         birthYear.text = dataStore.getString("userbirthYear","")
         birthMonth.text = dataStore.getString("userbirthMonth","")
         birthDay.text = dataStore.getString("userbirthDay","")
@@ -84,7 +84,7 @@ class Confirmation : AppCompatActivity() {
         obj.put("LoginFlg", "1")
         obj.put("mailAddress", mailAddress.text.toString())
         obj.put("registTitle", "ホメ界の新星")
-        obj.put("userName", userNm.text.toString())
+        obj.put("userName", userName.text.toString())
 
         // ニフクラへの保存実行
         obj.saveInBackground { e ->
@@ -173,7 +173,7 @@ class Confirmation : AppCompatActivity() {
         // 会員管理登録用のオブジェクト
         val user = NCMBUser()
         // 会員管理への登録情報
-        user.userName = userNm.text.toString()
+        user.userName = userName.text.toString()
         user.setPassword(this.password)
         user.mailAddress = mailAddress.text.toString()
         user.saveInBackground { e ->
@@ -253,7 +253,7 @@ class Confirmation : AppCompatActivity() {
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 
         /*
-        editor.putString("userName",userNm.text.toString())
+        editor.putString("userName",userName.text.toString())
         editor.putString("objectId",this.objectId)
         editor.putString("gender",userSex.text.toString())
         editor.putString("elementarySchool",ElementarySchool.text.toString())

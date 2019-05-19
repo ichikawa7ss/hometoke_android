@@ -11,6 +11,7 @@ import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.graphics.Bitmap
 import com.nifcloud.mbaas.core.NCMB
 import com.nifcloud.mbaas.core.NCMBFile
@@ -18,12 +19,13 @@ import com.nifcloud.mbaas.core.NCMBAcl
 import android.graphics.BitmapFactory
 import com.example.myapplication.activity.RegisterSchoolsActivity
 import com.isseiaoki.simplecropview.CropImageView
+import kotlinx.android.synthetic.main.activity_confirmation.*
 import java.io.ByteArrayOutputStream
 
 class SelectPicture : AppCompatActivity() {
 
     // ユーザ名
-    private var userNm = "defaultNm"
+    private var userName = "defaultNm"
 
     // カメラステータス
     companion object {
@@ -42,8 +44,14 @@ class SelectPicture : AppCompatActivity() {
             "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1",
             "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7");
 
-        // 前画面からユーザ名を取得 // 画面　結合あとにコメントアウト解除
-        userNm = intent.getStringExtra("userNm")
+
+        // Preferenceの設定
+        val dataStore = getSharedPreferences("DataStore", Context.MODE_PRIVATE)
+        val editor = dataStore.edit()
+
+
+        // Preferenceの設定からのデータ受け取り
+        userName = dataStore.getString("userName","")
 
         // 初期画像の設定
         cropImageView.setImageBitmap(BitmapFactory.decodeResource(resources, R.drawable.noimage))
@@ -147,7 +155,7 @@ class SelectPicture : AppCompatActivity() {
         acl.publicWriteAccess = true
 
         // 登録するファイル情報
-        val file : NCMBFile = NCMBFile("${userNm}_profile.png", dataByte, acl);
+        val file : NCMBFile = NCMBFile("${userName}_profile.png", dataByte, acl);
         file.saveInBackground() { e ->
             if (e != null) {
                 // エラー時の処理
@@ -166,8 +174,9 @@ class SelectPicture : AppCompatActivity() {
         // 次画面intentの生成
         val confirmationIntent = Intent(getApplication(), RegisterSchoolsActivity::class.java)
 
+        /*
         // データのセット
-        confirmationIntent.putExtra("userNm", intent.getStringExtra("userNm"))
+        confirmationIntent.putExtra("userName", intent.getStringExtra("userName"))
         confirmationIntent.putExtra("userSex", intent.getStringExtra("userSex"))
         confirmationIntent.putExtra("userBirthYear", intent.getStringExtra("userBirthYear"))
         confirmationIntent.putExtra("userBirthMonth", intent.getStringExtra("userBirthMonth"))
@@ -180,6 +189,7 @@ class SelectPicture : AppCompatActivity() {
         confirmationIntent.putExtra("highSchoolEntryYear", intent.getStringExtra("highSchoolEntryYear"))
         confirmationIntent.putExtra("mailAddress", intent.getStringExtra("mailAddress"))
         confirmationIntent.putExtra("password", intent.getStringExtra("password"))
+        */
 
         // 次画面遷移
         startActivity(confirmationIntent);
