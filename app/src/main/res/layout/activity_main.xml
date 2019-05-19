@@ -35,7 +35,7 @@
             android:scaleType="fitCenter"
             app:layout_constraintStart_toStartOf="@+id/receiverImage0"
             app:layout_constraintEnd_toEndOf="@+id/receiverImage0" app:layout_constraintDimensionRatio="w,1:1"
-            app:layout_constraintTop_toBottomOf="@+id/receiverName0" android:layout_marginTop="50dp"/>
+            android:layout_marginTop="50dp" app:layout_constraintTop_toTopOf="@+id/receiverName0"/>
     <TextView
             android:text="TextView"
             android:layout_height="18dp"
@@ -109,12 +109,14 @@
             app:srcCompat="@drawable/all_shaffle"
             tools:visibility="visible" android:background="#00FFFFFF"
             app:layout_constraintStart_toStartOf="@+id/receiverImage2"
-            app:layout_constraintTop_toBottomOf="@+id/receiverName2" android:layout_marginTop="10dp"/>
+            app:layout_constraintTop_toBottomOf="@+id/receiverName2" android:layout_marginTop="10dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="40dp"/>
     <ImageButton
             android:layout_width="91dp"
             android:layout_height="74dp" app:srcCompat="@drawable/friends_shaffle"
             android:id="@+id/friendShuffulBtn"
             android:background="#00FFFFFF" app:layout_constraintEnd_toEndOf="@+id/receiverImage1"
-            app:layout_constraintTop_toBottomOf="@+id/receiverName1" android:layout_marginTop="10dp"/>
+            app:layout_constraintTop_toBottomOf="@+id/receiverName1" android:layout_marginTop="10dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="40dp"/>
 
 </android.support.constraint.ConstraintLayout>
