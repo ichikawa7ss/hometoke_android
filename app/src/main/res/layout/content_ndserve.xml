@@ -5,7 +5,10 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ServeView" android:scrollbarTrackVertical="@drawable/friends_shaffle"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/app_bar_ndserve"
+        tools:context=".NDServeActivity"
+        android:scrollbarTrackVertical="@drawable/friends_shaffle"
         tools:layout_editor_absoluteY="81dp">
 
     <ImageButton
@@ -19,7 +22,6 @@
             app:layout_constraintDimensionRatio="h,1:1" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="30dp" android:layout_marginStart="30dp" android:scaleType="fitCenter"/>
     <TextView
-            android:text="TextView"
             android:layout_height="18dp"
             android:id="@+id/receiverName2" android:layout_width="100dp"
             android:gravity="center"
@@ -38,7 +40,6 @@
             android:layout_marginBottom="50dp" app:layout_constraintBottom_toBottomOf="parent"
             android:scaleType="fitCenter"/>
     <TextView
-            android:text="TextView"
             android:layout_height="18dp"
             android:id="@+id/receiverName3" android:layout_width="100dp"
             android:gravity="center"
@@ -48,7 +49,7 @@
             app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="20dp"/>
     <ImageView
             android:layout_width="0dp"
-            android:layout_height="0dp" app:srcCompat="@drawable/rukawa"
+            android:layout_height="0dp" app:srcCompat="@drawable/noquestionimage"
             android:id="@+id/questionImage"
             app:layout_constraintHeight_percent="0.38"
             app:layout_constraintDimensionRatio="1:1" app:layout_constraintTop_toTopOf="parent"
@@ -56,7 +57,6 @@
             app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toEndOf="parent"
             android:scaleType="fitCenter"/>
     <TextView
-            android:text="TextView"
             android:layout_height="wrap_content"
             android:id="@+id/questionPhrase"
             android:layout_width="wrap_content"
@@ -87,7 +87,6 @@
             app:layout_constraintDimensionRatio="h,1:1" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginRight="30dp" android:layout_marginEnd="30dp" android:scaleType="fitCenter"/>
     <TextView
-            android:text="TextView"
             android:layout_height="18dp"
             android:id="@+id/receiverName0" android:layout_width="100dp"
             android:gravity="center"
@@ -95,7 +94,6 @@
             app:layout_constraintEnd_toEndOf="@+id/receiverImage0"
             app:layout_constraintTop_toBottomOf="@+id/receiverImage0" android:layout_marginTop="5dp"/>
     <TextView
-            android:text="TextView"
             android:layout_height="18dp"
             android:id="@+id/receiverName1" android:layout_width="100dp"
             android:gravity="center"
@@ -117,5 +115,6 @@
             android:id="@+id/friendShuffulBtn"
             android:background="#00FFFFFF" app:layout_constraintEnd_toEndOf="@+id/receiverImage1"
             app:layout_constraintTop_toBottomOf="@+id/receiverName1" android:layout_marginTop="10dp"/>
+
 
 </android.support.constraint.ConstraintLayout>

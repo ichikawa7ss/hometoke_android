@@ -8,4 +8,30 @@
     <string name="stamp_flattext2">あなたは</string>
     <string name="stamp_flat_text3">に選ばれました</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_ndserve">ホメる</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_tools">Tools</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
+    <string name="menu_receive">ホメられた</string>
+    <string name="menu_serve">ホメる</string>
+    <string name="title_activity_ndreceive">ホメられた</string>
+
+    <string name="elementary_school">小学校</string>
+    <string name="junior_highschool">中学校</string>
+    <string name="high_school">高等学校</string>
+    <string name="hint_elementary_sch">港区立ホメトケ小学校</string>
+    <string name="hint_junior_highsch">港区立ホメトケ中学校</string>
+    <string name="hint_highsch">東京都立ホメトケ高等学校</string>
+    <string name="nextBtn">次へ</string>
+    <string name="setImageBtn">プロフィール画像を設定する</string>
 </resources>

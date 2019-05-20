@@ -1,10 +1,11 @@
 package com.example.myapplication
 
+import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_sign_up_view.*
-// import android.util.Log
 import android.content.Intent
+import android.content.SharedPreferences
 import android.support.v7.app.AlertDialog
 import android.text.InputType
 
@@ -12,6 +13,7 @@ class SignUpView : AppCompatActivity() {
 
     // エラーステータス
     private var errStatus : Int = 0
+    private var checkBirthday = true
 
     // 作業用
     private var year : Int = 2000
@@ -20,7 +22,6 @@ class SignUpView : AppCompatActivity() {
 
     // 性別、学年、生年月日
     private var userSex : String = "男"
-    private var userBirthDay : String = ""
     private var userEntryYear : Int = 0
     private var elementalySchoolEntryYear : String = ""
     private var juniorHighSchoolEntryYear : String = ""
@@ -29,6 +30,12 @@ class SignUpView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up_view)
+
+        val PREFERENCES_FILE_NAME = "preference"
+
+        val settings = getSharedPreferences(PREFERENCES_FILE_NAME, 0) // 0 -> MODE_PRIVATE
+        val editor = settings.edit()
+        editor.putLong("logged-in", 1).apply()
 
         // 入力値の型の指定
         birthYear.inputType = InputType.TYPE_CLASS_NUMBER
@@ -60,23 +67,22 @@ class SignUpView : AppCompatActivity() {
     // 生年月日の設定、学年の計算
     private fun setBirthDayAndGrade() {
 
-        if (birthYear.text.length != 0 && birthMonth.text.length != 0 && birthDay.text.length != 0) {
+        if (birthYear.text.isNotEmpty() && birthMonth.text.isNotEmpty() && birthDay.text.isNotEmpty()) {
             year = Integer.parseInt(birthYear.text.toString())
             month = Integer.parseInt(birthMonth.text.toString())
             day = Integer.parseInt(birthDay.text.toString())
+            checkBirthday = true
+        } else {
+            checkBirthday = false
         }
 
         // 学年の計算
         //4月1日生まれの場合だけ特殊
-        if (month == 4 && day == 1) {
-            this.userEntryYear = year + 6
-            //早生まれ（1〜3月生まれ）
-        } else if (month <= 3) {
-            this.userEntryYear = year + 6
-            //遅生まれ（4月2日〜12/31）
-        } else if (month >= 4 && month <= 12) {
-            this.userEntryYear = year + 7
-        }
+        if (month == 4 && day == 1) this.userEntryYear = year + 6
+        //早生まれ（1〜3月生まれ）
+        else if (month <= 3) this.userEntryYear = year + 6
+        //遅生まれ（4月2日〜12/31）
+        else if (month in 4..12) this.userEntryYear = year + 7
 
         //各入学年の設定
         this.elementalySchoolEntryYear = this.userEntryYear.toString()
@@ -129,8 +135,9 @@ class SignUpView : AppCompatActivity() {
 
     // 必須入力チェック
     private fun checkRequiredVal() : Int {
-        if (userNm.text.length == 0 || userMailAddress.text.length == 0
-            || userPassword.text.length == 0 || userPasswordConfirm.text.length == 0 ) {
+        if (userName.text.isEmpty() || userMailAddress.text.isEmpty()
+            || userPassword.text.isEmpty() || userPasswordConfirm.text.isEmpty()
+        ) {
             showAlert("エラー", "必須項目を入力してください")
             return 1
         }
@@ -155,23 +162,31 @@ class SignUpView : AppCompatActivity() {
         // 誕生日と学年の計算
         setBirthDayAndGrade()
 
+        // データをPreferenceにセット
+        val dataStore: SharedPreferences = getSharedPreferences("DataStore", Context.MODE_PRIVATE)
+        val editor = dataStore.edit()
+
+        editor.putString("userName",userName.text.toString())
+        editor.putString("gender",this.userSex)
+        editor.putString("entryYear","2000")
+        editor.putString("userBirthYear", this.year.toString())
+        editor.putString("userBirthMonth", this.month.toString())
+        editor.putString("userBirthDay", this.day.toString())
+        editor.putString("elementalySchoolEntryYear", this.elementalySchoolEntryYear)
+        editor.putString("juniorHighSchoolEntryYear", this.juniorHighSchoolEntryYear)
+        editor.putString("highSchoolEntryYear", this.highSchoolEntryYear)
+        editor.putString("mailAddress",userMailAddress.text.toString())
+        editor.putString("password",userMailAddress.text.toString())
+
+        editor.apply()
+
         // 次画面intentの生成
         val intent = Intent(getApplication(), SelectPicture::class.java)
 
-        // データのセット
-        intent.putExtra("userNm", userNm.text.toString())
-        intent.putExtra("userSex", this.userSex)
-        intent.putExtra("userBirthYear", this.year.toString())
-        intent.putExtra("userBirthMonth", this.month.toString())
-        intent.putExtra("userBirthDay", this.day.toString())
-        intent.putExtra("elementalySchoolEntryYear", this.elementalySchoolEntryYear)
-        intent.putExtra("juniorHighSchoolEntryYear", this.juniorHighSchoolEntryYear)
-        intent.putExtra("highSchoolEntryYear", this.highSchoolEntryYear)
-        intent.putExtra("mailAddress", userMailAddress.text.toString())
-        intent.putExtra("password", userPassword.text.toString())
+        intent.putExtra("checkInputBirthday",checkBirthday)
 
         // 次画面遷移
-        startActivity(intent);
+        startActivity(intent)
 
     }
 

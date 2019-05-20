@@ -1,8 +1,6 @@
 package com.example.myapplication
 
 import android.content.Context
-import android.os.Parcel
-import android.os.Parcelable
 import com.nifcloud.mbaas.core.NCMBObject
 
 class FriendData private constructor(context: Context) {
