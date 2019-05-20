@@ -114,22 +114,11 @@ class RegisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
         // 次へボタンが押下された場合
         val confirmationIntent = Intent(this, Confirmation::class.java)
 
-        // データのセット
-        // TODO ・遷移に持たせる　・Preferenceに持たせる　を設計する
-        confirmationIntent.putExtra("userName", intent.getStringExtra("userName"))
-        confirmationIntent.putExtra("userSex", intent.getStringExtra("userSex"))
-        confirmationIntent.putExtra("userBirthYear", intent.getStringExtra("userBirthYear"))
-        confirmationIntent.putExtra("userBirthMonth", intent.getStringExtra("userBirthMonth"))
-        confirmationIntent.putExtra("userBirthDay", intent.getStringExtra("userBirthDay"))
-        confirmationIntent.putExtra("elementarySchool", intent.getStringExtra("elementarySchool"))
-        confirmationIntent.putExtra("juniorHighSchool", intent.getStringExtra("juniorHighSchool"))
-        confirmationIntent.putExtra("highSchool", intent.getStringExtra("highSchool"))
-        confirmationIntent.putExtra("elementalySchoolEntryYear", intent.getStringExtra("elementalySchoolEntryYear"))
-        confirmationIntent.putExtra("juniorHighSchoolEntryYear", intent.getStringExtra("juniorHighSchoolEntryYear"))
-        confirmationIntent.putExtra("highSchoolEntryYear", intent.getStringExtra("highSchoolEntryYear"))
-        confirmationIntent.putExtra("mailAddress", intent.getStringExtra("mailAddress"))
-        confirmationIntent.putExtra("password", intent.getStringExtra("password"))
-
+        confirmationIntent.putExtra(
+            "checkInputBirthday",
+            intent.getBooleanExtra("checkImputBirthday",true)
+        )
+        
         startActivity(confirmationIntent)
     }
 }

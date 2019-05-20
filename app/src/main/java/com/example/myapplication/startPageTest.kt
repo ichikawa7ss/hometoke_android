@@ -36,7 +36,7 @@ class startPageTest : AppCompatActivity() {
         }
 
         MoveToMainActivity.setOnClickListener() {
-            val intent = Intent(this, ServeView::class.java)
+            val intent = Intent(this, NDServeActivity::class.java)
             startActivity(intent)
         }
 

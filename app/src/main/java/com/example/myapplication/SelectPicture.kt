@@ -213,15 +213,15 @@ class SelectPicture : AppCompatActivity() {
     private fun moveToConfirmation () {
 
         // 次画面intentの生成
-        val confirmationIntent = Intent(application, RegisterSchoolsActivity::class.java)
+        val registSchoolsIntent = Intent(application, RegisterSchoolsActivity::class.java)
 
-        confirmationIntent.putExtra(
+        registSchoolsIntent.putExtra(
             "checkInputBirthday",
             intent.getBooleanExtra("checkImputBirthday",true)
         )
 
         // 次画面遷移
-        startActivity(confirmationIntent)
+        startActivity(registSchoolsIntent)
     }
 
 }

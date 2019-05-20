@@ -17,7 +17,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.nifcloud.mbaas.core.*
-import kotlinx.android.synthetic.main.activity_serve.*
+import kotlinx.android.synthetic.main.content_ndserve.*
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
