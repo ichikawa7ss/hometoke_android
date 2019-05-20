@@ -82,7 +82,9 @@ class RegisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
 
         if (resultCode == Activity.RESULT_OK && intent != null && intent.extras != null) {
             // 学校名をSearchSchoolActivityから取得
-            schoolName = intent.extras.getString(EXTRA_SCHOOL_TYPE)
+            schoolName = intent.extras.getString(
+                EXTRA_SCHOOL_TYPE
+            )
             // リクエストコードによって学校名を表示するテキストフィールドを指定
             when(requestCode) {
                 1000 -> {

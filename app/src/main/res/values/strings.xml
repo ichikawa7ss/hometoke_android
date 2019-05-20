@@ -32,4 +32,6 @@
     <string name="hint_elementary_sch">港区立ホメトケ小学校</string>
     <string name="hint_junior_highsch">港区立ホメトケ中学校</string>
     <string name="hint_highsch">東京都立ホメトケ高等学校</string>
+    <string name="nextBtn">次へ</string>
+    <string name="setImageBtn">プロフィール画像を設定する</string>
 </resources>
