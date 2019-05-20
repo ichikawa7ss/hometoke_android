@@ -17,7 +17,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.nifcloud.mbaas.core.*
-import kotlinx.android.synthetic.main.activity_serve.*
+import kotlinx.android.synthetic.main.content_ndserve.*
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -174,35 +174,46 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         // 質問の検索・取得
         val query = NCMBQuery<NCMBObject>("m_questions")
         query.whereEqualTo("releaseFlg", "1")
-        query.findInBackground { objs, _ ->
-            this.dataQuestions = objs
-            val doubleVal: Double = objs.size.toDouble()
-            var noRepeat = false
-            for (data in this.dataQuestions) {
-                // NCMBFileを宣言
-                val imageName = data.getString("objectId")
-                val file = NCMBFile("$imageName.png")
+        query.findInBackground { objs, e_access ->
+            // ニフクラへのアクセスエラー
+            if (e_access == null) {
+                this.dataQuestions = objs
+                val doubleVal: Double = objs.size.toDouble()
+                var noRepeat = false
+                for (data in this.dataQuestions) {
+                    // NCMBFileを宣言
+                    val imageName = data.getString("objectId")
+                    val file = NCMBFile("$imageName.png")
 
-                // 質問画像をキャッシュへ格納
-                file.fetchInBackground { imgData, eFile ->
-                    if (eFile == null) {
-                        this.imgQuestions[imageName] = imgData
-                        countQ += 1.0
-                        Log.d("[DEBUG]","現在の読み込み件数：$countQ/${objs.size}")
+                    // 質問画像をキャッシュへ格納
+                    file.fetchInBackground { imgData, eFile ->
+                        if (eFile == null) {
+                            this.imgQuestions[imageName] = imgData
+                            countQ += 1.0
+                            Log.d("[DEBUG]", "現在の読み込み件数：$countQ/${objs.size}")
 
-                        // 質問画像を70%読みこんだらインジケーターを止めて質問画像を表示
-                        if ((countQ/doubleVal >= 0.8) && !noRepeat) {
-                            if (this.imgQuestions[this.firstQImageId] == null) {
-                                // ダミー画像を使用
-                                questionImage.setImageResource(R.drawable.noquestionimage)
-                            } else {
-                                questionImage.setImageBitmap(BitmapFactory.decodeByteArray(imgData, 0, imgData.size))
+                            // 質問画像を70%読みこんだらインジケーターを止めて質問画像を表示
+                            if ((countQ / doubleVal >= 0.8) && !noRepeat) {
+                                if (this.imgQuestions[this.firstQImageId] == null) {
+                                    // ダミー画像を使用
+                                    questionImage.setImageResource(R.drawable.noquestionimage)
+                                } else {
+                                    questionImage.setImageBitmap(
+                                        BitmapFactory.decodeByteArray(
+                                            imgData,
+                                            0,
+                                            imgData.size
+                                        )
+                                    )
+                                }
+                                this.questionPhrase.text = "${this.questionTempPhrase}といえば？"
+                                noRepeat = true
                             }
-                            this.questionPhrase.text = "${this.questionTempPhrase}といえば？"
-                            noRepeat = true
                         }
                     }
                 }
+            } else {
+                Log.e("[ERROR]",e_access.toString())
             }
             // 友達をキャッシュデータに保管
             this.saveFriendCacheData()
@@ -218,8 +229,12 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         queryFriend.whereEqualTo("userId",userInfoSP.getString("objectId", ""))
         queryFriend.whereEqualTo("blockFlg","0")
         queryFriend.setIncludeKey("friendId");
-        queryFriend.findInBackground { objs, _ ->
-            this.dataFriend = objs
+        queryFriend.findInBackground { objs, error ->
+            if (error == null ) {
+                this.dataFriend = objs
+            } else {
+                Log.e("[ERROR]",error.toString())
+            }
         }
     }
 

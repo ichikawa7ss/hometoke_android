@@ -30,7 +30,7 @@ class SearchSchoolActivity : AppCompatActivity() {
         val schoolType = intent.extras.getInt(RegisterSchoolsActivity.EXTRA_SCHOOL_TYPE)
 
         // SearchView
-        val searchSchools: SearchView = findViewById(R.id.search_school)
+        val searchSchools: SearchView = this.findViewById(R.id.search_school)
         // ListView
         val schoolList: ListView = this.findViewById(R.id.school_list)
 
