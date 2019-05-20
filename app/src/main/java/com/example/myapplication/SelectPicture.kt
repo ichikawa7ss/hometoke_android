@@ -215,6 +215,11 @@ class SelectPicture : AppCompatActivity() {
         // 次画面intentの生成
         val confirmationIntent = Intent(application, RegisterSchoolsActivity::class.java)
 
+        confirmationIntent.putExtra(
+            "checkInputBirthday",
+            intent.getBooleanExtra("checkImputBirthday",true)
+        )
+
         // 次画面遷移
         startActivity(confirmationIntent)
     }

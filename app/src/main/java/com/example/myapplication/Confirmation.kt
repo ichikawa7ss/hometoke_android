@@ -36,8 +36,9 @@ class Confirmation : AppCompatActivity() {
         val dataStore = getSharedPreferences("DataStore", Context.MODE_PRIVATE)
         val editor = dataStore.edit()
 
+        val checkInputBirthday = intent.getBooleanExtra("checkInputBirthday",true)
 
-        // 前画面からのデータ受け取り
+        // preferenceからのデータ受け取り
         userName.text = dataStore.getString("userName","")
         userSex.text = dataStore.getString("gender","")
         birthYear.text = dataStore.getString("userbirthYear","")
@@ -46,9 +47,18 @@ class Confirmation : AppCompatActivity() {
         ElementarySchool.text = dataStore.getString("elementarySchool","")
         JuniorHighSchool.text = dataStore.getString("juniorHighSchool","")
         HighSchool.text = dataStore.getString("highSchool","")
-        elementarySchoolEntryYear.text = dataStore.getString("elementalySchoolEntryYear","")
-        juniorHighSchoolEntryYear.text = dataStore.getString("juniorHighSchoolEntryYear","")
-        highSchoolEntryYear.text = dataStore.getString("highSchoolEntryYear","")
+        if (checkInputBirthday) {
+            elementarySchoolEntryYear.text = dataStore.getString("elementalySchoolEntryYear","")
+            juniorHighSchoolEntryYear.text = dataStore.getString("juniorHighSchoolEntryYear","")
+            highSchoolEntryYear.text = dataStore.getString("highSchoolEntryYear","")
+        } else {
+            elementarySchoolEntryYear.text = ""
+            juniorHighSchoolEntryYear.text = ""
+            highSchoolEntryYear.text = ""
+            birthMonthLabel.text = ""
+            birthDayLabel.text = ""
+            birthYearLabel.text = ""
+        }
         mailAddress.text = dataStore.getString("mailAddress","")
         this.password = dataStore.getString("password","")
 
@@ -252,23 +262,9 @@ class Confirmation : AppCompatActivity() {
         @SuppressLint("SimpleDateFormat")
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 
-        /*
-        editor.putString("userName",userName.text.toString())
-        editor.putString("objectId",this.objectId)
-        editor.putString("gender",userSex.text.toString())
-        editor.putString("elementarySchool",ElementarySchool.text.toString())
-        editor.putString("juniorHighSchool",JuniorHighSchool.text.toString())
-        editor.putString("highSchool",HighSchool.text.toString())
-        editor.putString("entryYear",elementarySchoolEntryYear.text.toString())
-        editor.putString("registTitle","ホメ界の新星")
-        editor.putString("questionId","EhjSthKAdd1zLtnR")
-        editor.putString("updateReceiveTableTime", df.format(Date())).apply()
-        */
-
         editor.putString("objectId",this.objectId)
         editor.putString("registTitle","ホメ界の新星")
         editor.putString("updateReceiveTableTime", df.format(Date())).apply()
-
 
     }
 
