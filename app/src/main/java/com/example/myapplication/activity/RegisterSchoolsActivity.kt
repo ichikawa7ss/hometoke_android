@@ -36,7 +36,7 @@ class RegisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
         inputHighSch.setOnClickListener(this)
 
         moveToConfirmationViewBtn.setOnClickListener {
-            moveToConfirmationView()
+            moveToCheckPersonalInfoView()
         }
     }
 
@@ -108,7 +108,7 @@ class RegisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    fun moveToConfirmationView() {
+    fun moveToCheckPersonalInfoView() {
         println("次へボタン押下")
 
         // 次へボタンが押下された場合

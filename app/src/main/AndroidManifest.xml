@@ -16,12 +16,14 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="HardcodedDebugMode">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.CheckPersonalInfoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".MainActivity">
         </activity>
         <activity
                 android:name=".NDReceiveActivity"
@@ -45,8 +47,6 @@
         <activity android:name=".SelectPicture">
         </activity>
         <activity android:name=".Confirmation">
-        </activity>
-        <activity android:name=".ServeView">
         </activity>
         <activity android:name=".ReceiveDetailView">
         </activity>
