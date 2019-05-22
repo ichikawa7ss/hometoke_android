@@ -10,7 +10,8 @@
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="395dp"
-            android:layout_height="715dp" tools:layout_editor_absoluteY="8dp" tools:layout_editor_absoluteX="8dp">
+            android:layout_height="715dp" tools:layout_editor_absoluteY="8dp" tools:layout_editor_absoluteX="8dp"
+            tools:ignore="MissingConstraints">
         <SearchView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
