@@ -187,8 +187,7 @@ class NDReceiveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         val query = NCMBQuery<NCMBObject>("e_serve")
 
         query.whereEqualTo("receiverId", myObjectID)
-        // TODO あとで消す
-        editor.putString("updateReceiveTableTime", df.format(Date())).apply()
+
         // createDateが更新時より新しいデータだけを読み込み
         query.whereGreaterThan("createDate",pref.getString("updateReceiveTableTime", null).toDate())
         query.addOrderByAscending("ascendingKey")
@@ -282,15 +281,16 @@ data class UnreadViewHolder(
 )
 
 
-class ReceiveAdapter (private val context: Context,
-                      private val ReceiveData:List<ReceiveEntity>): BaseAdapter() {
+class ReceiveAdapter (
+    context: Context,
+    private val ReceiveData:List<ReceiveEntity>): BaseAdapter() {
 
     // inflater という謎の必須設定
     private var inflater : LayoutInflater? = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater?
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        var viewHolder : ViewHolder? = null
-        var unreadViewHolder : UnreadViewHolder? = null
+        val viewHolder : ViewHolder?
+        val unreadViewHolder: UnreadViewHolder?
 
         var view = convertView
 
@@ -353,10 +353,10 @@ class ReceiveAdapter (private val context: Context,
 //    override fun getViewTypeCount() = 2
 
     override fun getItemViewType(position: Int): Int {
-        if (ReceiveData[position].readFlg == "0") {
-            return Constants.UNREAD_CELL
+        return if (ReceiveData[position].readFlg == "0") {
+            Constants.UNREAD_CELL
         } else {
-            return Constants.READ_CELL
+            Constants.READ_CELL
         }
     }
 }
