@@ -64,7 +64,7 @@ class SelectPicture : AppCompatActivity() {
         }
 
         // 次へボタン押下時
-        moveToConfirmationBtn.setOnClickListener {
+        moveToPersonalInfoBtn.setOnClickListener {
             savePicture()
             moveToConfirmation()
         }

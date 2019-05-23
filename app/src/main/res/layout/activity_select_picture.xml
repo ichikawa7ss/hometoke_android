@@ -39,7 +39,7 @@
     <Button
             android:text="@string/nextBtn"
             android:layout_width="0dp"
-            android:layout_height="50dp" android:id="@+id/moveToConfirmationBtn"
+            android:layout_height="50dp" android:id="@+id/moveToPersonalInfoBtn"
             app:layout_constraintWidth_percent="0.9" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:background="#CECECE" app:layout_constraintHorizontal_bias="0.512" android:layout_marginTop="12dp"
