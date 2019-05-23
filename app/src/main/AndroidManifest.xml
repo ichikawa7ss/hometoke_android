@@ -46,8 +46,6 @@
         </activity>
         <activity android:name=".Confirmation">
         </activity>
-        <activity android:name=".ServeView">
-        </activity>
         <activity android:name=".ReceiveDetailView">
         </activity>
         <activity android:name=".activity.SearchSchoolActivity">
