@@ -41,9 +41,9 @@ class Confirmation : AppCompatActivity() {
         // preferenceからのデータ受け取り
         userName.text = dataStore.getString("userName","")
         userSex.text = dataStore.getString("gender","")
-        birthYear.text = dataStore.getString("userbirthYear","")
-        birthMonth.text = dataStore.getString("userbirthMonth","")
-        birthDay.text = dataStore.getString("userbirthDay","")
+        birthYear.text = dataStore.getString("userBirthYear","")
+        birthMonth.text = dataStore.getString("userBirthMonth","")
+        birthDay.text = dataStore.getString("userBirthDay","")
         ElementarySchool.text = dataStore.getString("elementarySchool","")
         JuniorHighSchool.text = dataStore.getString("juniorHighSchool","")
         HighSchool.text = dataStore.getString("highSchool","")
@@ -64,12 +64,12 @@ class Confirmation : AppCompatActivity() {
 
         // 完了ボタン押下
         CompleteBtn.setOnClickListener() {
+            // sharedPreferencesの保存　←　画面遷移後のnullをなくすために早期にpreferenceを保存
+            saveSharedPrefarence()
             // ユーザ登録・初回褒め登録・友達登録
             registM_users()
             // 会員管理
             registAccountMng()
-            // sharedPreferencesの保存
-            saveSharedPrefarence()
             // 次画面遷移
             moveToTutorialView()
         }
@@ -91,7 +91,7 @@ class Confirmation : AppCompatActivity() {
         obj.put("gender", userSex.text.toString())
         obj.put("highSchool", HighSchool.text.toString())
         obj.put("juniorHighSchool", JuniorHighSchool.text.toString())
-        obj.put("LoginFlg", "1")
+        obj.put("loginFlg", "1")
         obj.put("mailAddress", mailAddress.text.toString())
         obj.put("registTitle", "ホメ界の新星")
         obj.put("userName", userName.text.toString())
@@ -201,6 +201,7 @@ class Confirmation : AppCompatActivity() {
 
     // 友達を登録する
     private fun registM_friends() {
+
         // ユーザマスタを検索
         val query = NCMBQuery<NCMBObject>("m_users")
         val query1 = NCMBQuery<NCMBObject>("m_users")
@@ -242,6 +243,7 @@ class Confirmation : AppCompatActivity() {
                                 throw e
                             } else {
                                 // 保存に成功した場合の処理
+
                                 Log.d("[DEBUG]", "保存成功　友達")
                                 Log.d("[DEBUG]", obj.toString())
                             }
@@ -264,6 +266,7 @@ class Confirmation : AppCompatActivity() {
 
         editor.putString("objectId",this.objectId)
         editor.putString("registTitle","ホメ界の新星")
+        editor.putString("updateFriendsTime", df.format(Date()))
         editor.putString("updateReceiveTableTime", df.format(Date())).apply()
 
     }

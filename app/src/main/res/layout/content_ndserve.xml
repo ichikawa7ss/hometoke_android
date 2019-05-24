@@ -24,7 +24,8 @@
             android:gravity="center"
             app:layout_constraintStart_toStartOf="@+id/receiverImage2"
             app:layout_constraintEnd_toEndOf="@+id/receiverImage2"
-            app:layout_constraintTop_toBottomOf="@+id/receiverImage2" android:layout_marginTop="5dp"/>
+            app:layout_constraintTop_toBottomOf="@+id/receiverImage2" android:layout_marginTop="5dp"
+            android:textSize="10sp"/>
     <ImageButton
             android:layout_width="0dp"
             android:layout_height="0dp" tools:srcCompat="@tools:sample/avatars"
@@ -42,14 +43,14 @@
             app:layout_constraintStart_toStartOf="@+id/receiverImage3"
             app:layout_constraintEnd_toEndOf="@+id/receiverImage3"
             app:layout_constraintTop_toBottomOf="@+id/receiverImage3" android:layout_marginTop="5dp"
-    />
+            android:textSize="10sp"/>
     <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp" app:srcCompat="@drawable/noquestionimage"
             android:id="@+id/questionImage"
             app:layout_constraintHeight_percent="0.3"
             app:layout_constraintDimensionRatio="1:1" app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="25dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="48dp" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toEndOf="parent"
             android:scaleType="fitCenter"/>
     <TextView
@@ -70,7 +71,7 @@
             app:srcCompat="@drawable/noimage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/questionPhrase" android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/questionPhrase" android:layout_marginTop="16dp"
             app:layout_constraintDimensionRatio="h,1:1" android:scaleType="fitCenter"/>
     <ImageButton
             android:layout_width="0dp"
@@ -88,14 +89,16 @@
             android:gravity="center"
             app:layout_constraintStart_toStartOf="@+id/receiverImage0"
             app:layout_constraintEnd_toEndOf="@+id/receiverImage0"
-            app:layout_constraintTop_toBottomOf="@+id/receiverImage0" android:layout_marginTop="5dp"/>
+            app:layout_constraintTop_toBottomOf="@+id/receiverImage0" android:layout_marginTop="5dp"
+            android:textSize="10sp"/>
     <TextView
             android:layout_height="18dp"
             android:id="@+id/receiverName1" android:layout_width="0dp"
             android:gravity="center"
             app:layout_constraintStart_toStartOf="@+id/receiverImage1"
             app:layout_constraintEnd_toEndOf="@+id/receiverImage1"
-            app:layout_constraintTop_toBottomOf="@+id/receiverImage1" android:layout_marginTop="5dp"/>
+            app:layout_constraintTop_toBottomOf="@+id/receiverImage1" android:layout_marginTop="5dp"
+            android:textSize="10sp"/>
 
     <ImageButton
             android:layout_width="90dp"

@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     // ログイン判定
     private fun loginCheck(): Boolean? {
         val settings = getSharedPreferences(PREFERENCES_FILE_NAME, 0) ?: return false // 0 -> MODE_PRIVATE
-        val login = settings.getLong("logged-in", 0).toInt()
+        val login = settings.getLong("loginFlg", 0).toInt()
         return login == 1
     }
 }
