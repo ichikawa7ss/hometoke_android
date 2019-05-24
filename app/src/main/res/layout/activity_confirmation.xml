@@ -25,7 +25,7 @@
                 android:layout_marginEnd="8dp"/>
         <TextView
                 android:text="お名前"
-                android:layout_width="370dp"
+                android:layout_width="0dp"
                 app:layout_constraintWidth_percent="0.9"
                 android:layout_height="wrap_content" android:id="@+id/userNameLabel"
                 app:layout_constraintTop_toBottomOf="@+id/imageView4"
@@ -53,7 +53,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/userSexLabel"/>
         <TextView
                 android:text="生年月日"
-                android:layout_width="368dp"
+                android:layout_width="0dp"
                 android:layout_height="20dp" android:id="@+id/userBirthDayLabel"
                 app:layout_constraintEnd_toEndOf="@+id/userSex"
                 app:layout_constraintStart_toStartOf="@+id/userSexLabel"

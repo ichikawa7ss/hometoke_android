@@ -42,7 +42,9 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
     // receiverのID,名前,デバイストークン
     private val objectIds = mutableListOf<String>("","","","")
     private val receiverNames = mutableListOf<String>("","","","")
-    // private val receiverDeviceTokens = mutableListOf<String>("","","","")
+
+    // ニフクラ用日付フォーマットを定義しておく
+    val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 
     private var questionId : String = ""
     private var questionGenderCondition : String = ""
@@ -110,34 +112,6 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         // NCMB初期化
         NCMB.initialize(applicationContext, "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1", "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7")
-
-//
-//        // TODO 【ここから】テスト用userInfoを新規登録画面作成後に消す
-//        val userInfo: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-//
-//        val editor = userInfo.edit()
-////            val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-////            editor.putString("updateFriendsTime", df.format(Date()))
-////            editor.apply()        editor.putString("userName","市川しょま")
-//        editor.putString("objectId","SOcuIKHKOBVdjKn7")
-//        editor.putString("loginFlg","1")
-//        editor.putString("gender","男")
-//        editor.putString("elementarySchool","あきる野市立東秋留小学校")
-//        editor.putString("juniorHighSchool","あきる野市立秋多中学校")
-//        editor.putString("highSchool","あきる野市立秋留台高等学校")
-//        editor.putString("entryYear","2000")
-//        editor.putString("registTitle","ホメ界の新星")
-//        editor.putString("questionId","")
-//
-//        // userInfo.edit().remove("updateFriendsTime").commit()
-//        editor.apply()
-//
-//        if (userInfo.getString("updateFriendsTime", null) == null) {
-//            val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-//            editor.putString("updateFriendsTime", df.format(Date()))
-//            editor.apply()
-//        }
-//        // TODO【ここまで】
 
         updateMFriends()
         saveFriendData()
@@ -422,8 +396,10 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         query3.whereEqualTo("entryYear", dataStore.getString("entryYear", ""))
         val query = NCMBQuery<NCMBObject>("m_users")
         query.or(arrayListOf(query1,query2,query3) as Collection<NCMBQuery<NCMBBase>>?)
+
         // AND条件で追加分の友達のみを指定
-        query.whereGreaterThan("createDate",dataStore.getString("updateFriendsTime", null).toDate())
+        val now = df.format(Date()).toString()
+        query.whereGreaterThan("createDate",dataStore.getString("updateFriendsTime", now).toDate())
         query.findInBackground { results, e ->
             // 友達がいた場合, 取得した友達をm_friendsに保存する
             if ( e == null && results.size > 0) {
@@ -438,7 +414,6 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
                             if (error == null) {
                                 // sharedPreferenceの友達更新日時を更新
                                 val editor = dataStore.edit()
-                                val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
                                 editor.putString("updateFriendsTime", df.format(Date()))
                                 editor.apply()
                                 Log.d("[DEBUG]", "更新日付：${Date()} ,「${results[i].getString("userName")}」を友達追加")
