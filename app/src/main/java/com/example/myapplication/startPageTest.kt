@@ -18,7 +18,7 @@ class startPageTest : AppCompatActivity() {
 
         MoveToConfirmationBtn.setOnClickListener {
             val intent = Intent(this, Confirmation::class.java)
-            intent.putExtra("userNm", "サンプル御名前")
+            intent.putExtra("userName", "サンプル御名前")
             intent.putExtra("userSex", "男")
             intent.putExtra("userbirthYear", "2000")
             intent.putExtra("userbirthMonth", "4")
@@ -36,13 +36,13 @@ class startPageTest : AppCompatActivity() {
         }
 
         MoveToMainActivity.setOnClickListener() {
-            val intent = Intent(this, ServeView::class.java)
+            val intent = Intent(this, NDServeActivity::class.java)
             startActivity(intent)
         }
 
         MoveToRegistPicture.setOnClickListener(){
             val intent = Intent(this, SelectPicture::class.java)
-            intent.putExtra("userNm", "サンプル御名前")
+            intent.putExtra("userName", "サンプル御名前")
             intent.putExtra("userSex", "男")
             intent.putExtra("userbirthYear", "2000")
             intent.putExtra("userbirthMonth", "4")
