@@ -114,8 +114,6 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         NCMB.initialize(applicationContext, "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1", "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7")
 
         updateMFriends()
-        saveFriendData()
-
 
         allShuffulBtn.setOnClickListener {
             decideQuestion()
@@ -205,6 +203,7 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         val dataStore = getSharedPreferences("DataStore", Context.MODE_PRIVATE)
         val queryFriend = NCMBQuery<NCMBObject>("m_friends")
+        val data = dataStore.getString("objectId", "")
         queryFriend.whereEqualTo("userId",dataStore.getString("objectId", ""))
         queryFriend.whereEqualTo("blockFlg","0")
         queryFriend.setIncludeKey("friendId");
@@ -222,19 +221,19 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         // 友達辞書からデータを取得
         for (data in dataFriend){
             // 友達IDに子オブジェクトがあれば読み出し
-            val userObjId = data.getJSONObject("friendId").getString("objectId")
-            Log.d("[DEBUG]","${userObjId}の画像を読み込み中")
-            if (userObjId != null) {
+            val userObjName = data.getJSONObject("friendId").getString("userName")
+            Log.d("[DEBUG]","${userObjName}の画像を読み込み中")
+            if (userObjName != null) {
                 // NCMBFileを宣言
-                val file = NCMBFile("${userObjId}.png")
+                val file = NCMBFile("${userObjName}_profile.png")
                 // 友達画像をキャッシュへ格納
                 file.fetchInBackground { imgFriecdData, eFile ->
                     if (eFile == null){
-                        Log.d("[DEBUG]","${userObjId}の画像を保存中")
-                        this.imgFriends[userObjId] = imgFriecdData
+                        Log.d("[DEBUG]","${userObjName}の画像を保存中")
+                        this.imgFriends[userObjName] = imgFriecdData
                     } else {
                         Log.e("[ERROR]",eFile.toString())
-                        Log.e("[ERROR]","友達画像のキャッシュへの保存に失敗しました　ユーザID：${userObjId}")
+                        Log.e("[ERROR]","友達画像のキャッシュへの保存に失敗しました　ユーザ名：${userObjName}")
                     }
                 }
             }
@@ -386,19 +385,20 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         val dataStore = getSharedPreferences("DataStore", Context.MODE_PRIVATE)
 
         val query1 = NCMBQuery<NCMBObject>("m_users")
-        query1.whereEqualTo("elementarySchool","あきる野市立東秋留小学校")
+        query1.whereEqualTo("elementarySchool",dataStore.getString("elementarySchool",""))
         query1.whereEqualTo("entryYear", dataStore.getString("entryYear", ""))
         val query2 = NCMBQuery<NCMBObject>("m_users")
-        query2.whereEqualTo("juniorHighSchool","あきる野市立秋多中学校")
+        query2.whereEqualTo("juniorHighSchool",dataStore.getString("juniorHighSchool",""))
         query2.whereEqualTo("entryYear", dataStore.getString("entryYear", ""))
         val query3 = NCMBQuery<NCMBObject>("m_users")
-        query3.whereEqualTo("highSchool","あきる野市立秋留台高等学校")
+        query3.whereEqualTo("highSchool",dataStore.getString("highSchool",""))
         query3.whereEqualTo("entryYear", dataStore.getString("entryYear", ""))
         val query = NCMBQuery<NCMBObject>("m_users")
         query.or(arrayListOf(query1,query2,query3) as Collection<NCMBQuery<NCMBBase>>?)
 
         // AND条件で追加分の友達のみを指定
         val now = df.format(Date()).toString()
+        val data = dataStore.getString("updateFriendsTime", now).toDate()
         query.whereGreaterThan("createDate",dataStore.getString("updateFriendsTime", now).toDate())
         query.findInBackground { results, e ->
             // 友達がいた場合, 取得した友達をm_friendsに保存する
@@ -433,6 +433,7 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
                 Log.e("[ERROR]", "ニフクラへのアクセスに失敗")
                 Log.e("[ERROR]", e.toString())
             }
+            saveFriendData()
         }
     }
 

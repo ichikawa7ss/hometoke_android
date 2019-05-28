@@ -108,17 +108,17 @@ class RegisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    fun moveToCheckPersonalInfoView() {
-        println("次へボタン押下")
+    private fun moveToCheckPersonalInfoView() {
 
         // 次へボタンが押下された場合
-        val confirmationIntent = Intent(this, Confirmation::class.java)
+        val checkPersonalInfoIntent = Intent(this, CheckPersonalInfoActivity::class.java)
 
-        confirmationIntent.putExtra(
-            "checkInputBirthday",
-            intent.getBooleanExtra("checkImputBirthday",true)
-        )
-        
-        startActivity(confirmationIntent)
+        // 生年月日の入力チェックをintentで渡す
+        checkPersonalInfoIntent.putExtra("checkInputBirthday", intent.getBooleanExtra("checkImputBirthday",true))
+
+        // 画像のパスをintentで渡す
+        checkPersonalInfoIntent.putExtra("filepath",intent.getStringExtra("filepath"))
+
+        startActivity(checkPersonalInfoIntent)
     }
 }

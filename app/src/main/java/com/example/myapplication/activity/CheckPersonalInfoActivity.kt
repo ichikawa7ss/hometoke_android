@@ -47,6 +47,8 @@ class CheckPersonalInfoActivity : AppCompatActivity() {
 
             confirmationIntent.putExtra("checkInputBirthday", intent.getBooleanExtra("checkImputBirthday",true))
 
+            confirmationIntent.putExtra("filepath",intent.getStringExtra("filepath"))
+
             startActivity(confirmationIntent)
         } else {
             // 同意がなければ

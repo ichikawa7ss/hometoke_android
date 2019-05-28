@@ -18,8 +18,13 @@ import com.nifcloud.mbaas.core.NCMBFile
 import com.nifcloud.mbaas.core.NCMBAcl
 import android.graphics.BitmapFactory
 import com.isseiaoki.simplecropview.CropImageView
-import java.io.ByteArrayOutputStream
 import com.example.myapplication.activity.RegisterSchoolsActivity
+import android.content.ContentValues
+import android.graphics.Bitmap.CompressFormat
+import android.os.Environment
+import android.text.SpannableStringBuilder
+import java.io.*
+
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class SelectPicture : AppCompatActivity() {
@@ -65,10 +70,27 @@ class SelectPicture : AppCompatActivity() {
 
         // 次へボタン押下時
         moveToPersonalInfoBtn.setOnClickListener {
-            savePicture()
-            moveToConfirmation()
+            // TODO 画面を保存してパスを渡すメソッドを用意
+
+            val filepath =  saveImageToLocalFile()
+            moveToRegisterSchools(filepath)
         }
     }
+
+    // TODO 実機デバッグした後にどうするか決める
+
+    // 次のActivityがforegroundに来るときに呼ばれる
+    override fun onPause() {
+        super.onPause()
+
+    }
+
+    // アクティビティ再表示のときに呼ばれる
+    override fun onResume() {
+        super.onResume()
+    }
+
+
 
     // 画像のサイズを規定のサイズに合わせる
     // サイズを変えずに画面遷移するとメモリリークとなる
@@ -182,7 +204,8 @@ class SelectPicture : AppCompatActivity() {
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), CAMERA_ROLE_PERMISSION_REQUEST_CODE)
     }
 
-    // 写真(デフォルト)をDBに保存する
+    // TODO　あとで消す
+
     private fun savePicture() {
         // 画像をニフクラへ保存
         // 画像の変換
@@ -209,16 +232,51 @@ class SelectPicture : AppCompatActivity() {
         }
     }
 
+    private fun saveImageToLocalFile(): String{
+
+        // 保存するためのディレクトリを作成
+        val SAVE_DIR = "/MyPhoto/"
+        val file = File(this.applicationContext.filesDir,"/MyPhoto/")
+        try {
+            if (!file.exists()) {
+                file.mkdir()
+            }
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+            throw e
+        }
+
+        // 画像名は一律で"profileImg.jpg"に統一
+        val fileName = "profileImg.jpeg"
+        val filePath = File(file, fileName)
+        try {
+            val out = FileOutputStream(filePath)
+            // 端末内に画像を保存
+            cropImageView.croppedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+            out.flush()
+            out.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            throw e
+        }
+
+        return filePath.toString()
+    }
+
     // 次画面へ遷移する
-    private fun moveToConfirmation () {
+    private fun moveToRegisterSchools (filepath : String) {
 
         // 次画面intentの生成
         val registSchoolsIntent = Intent(application, RegisterSchoolsActivity::class.java)
 
+        // 全画面から受けた生年月日入力チェック結果を次画面に渡す
         registSchoolsIntent.putExtra(
             "checkInputBirthday",
             intent.getBooleanExtra("checkImputBirthday",true)
         )
+
+        // プロフィール画面のパスを次画面に渡す
+        registSchoolsIntent.putExtra("filepath",filepath)
 
         // 次画面遷移
         startActivity(registSchoolsIntent)
