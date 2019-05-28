@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v4.widget.DrawerLayout
@@ -95,7 +94,7 @@ class NDReceiveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     fun showReceiveView() {
         NCMB.initialize(applicationContext, "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1", "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7")
 
-        myName = PreferenceManager.getDefaultSharedPreferences(applicationContext).getString("userName","")
+        myName = getSharedPreferences("DataStore", Context.MODE_PRIVATE).getString("userName","")
 
         // SQLiteのデータ読み込み・listView表示
         loadListView()
@@ -168,14 +167,14 @@ class NDReceiveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private fun uploadReceiveLocalRecord() {
 
         // preference,editer,dataFormatの用意
-        val pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        val editor = pref.edit()
+        val dataStore = getSharedPreferences("DataStore", Context.MODE_PRIVATE)
+        val editor = dataStore.edit()
 
         @SuppressLint("SimpleDateFormat")
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 
         // 自身のobjectIDの呼び出し
-        val myObjectID = pref.getString("objectId", null)
+        val myObjectID = dataStore.getString("objectId", null)
         // ホメられたテーブルから新しいデータを格納
         var newReceiveData = listOf<NCMBObject>()
 
@@ -189,7 +188,7 @@ class NDReceiveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         query.whereEqualTo("receiverId", myObjectID)
 
         // createDateが更新時より新しいデータだけを読み込み
-        query.whereGreaterThan("createDate",pref.getString("updateReceiveTableTime", null).toDate())
+        query.whereGreaterThan("createDate",dataStore.getString("updateReceiveTableTime", null).toDate())
         query.addOrderByAscending("ascendingKey")
         query.findInBackground { objs, error ->
             if (error == null && objs.size > 0){

@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
@@ -11,7 +13,12 @@ import android.util.Log
 import com.example.myapplication.db.ReceiveOpenHelper
 import com.nifcloud.mbaas.core.*
 import kotlinx.android.synthetic.main.activity_confirmation.*
+import kotlinx.android.synthetic.main.activity_select_picture.*
 import org.jetbrains.anko.db.insert
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -32,18 +39,20 @@ class Confirmation : AppCompatActivity() {
             "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7"
         )
 
+        // TODO　デバッグ後消す
+        saveProfileImg(intent.getStringExtra("filepath"))
+
         // Preferenceの設定
         val dataStore = getSharedPreferences("DataStore", Context.MODE_PRIVATE)
-        val editor = dataStore.edit()
 
         val checkInputBirthday = intent.getBooleanExtra("checkInputBirthday",true)
 
         // preferenceからのデータ受け取り
         userName.text = dataStore.getString("userName","")
         userSex.text = dataStore.getString("gender","")
-        birthYear.text = dataStore.getString("userbirthYear","")
-        birthMonth.text = dataStore.getString("userbirthMonth","")
-        birthDay.text = dataStore.getString("userbirthDay","")
+        birthYear.text = dataStore.getString("userBirthYear","")
+        birthMonth.text = dataStore.getString("userBirthMonth","")
+        birthDay.text = dataStore.getString("userBirthDay","")
         ElementarySchool.text = dataStore.getString("elementarySchool","")
         JuniorHighSchool.text = dataStore.getString("juniorHighSchool","")
         HighSchool.text = dataStore.getString("highSchool","")
@@ -68,10 +77,6 @@ class Confirmation : AppCompatActivity() {
             registM_users()
             // 会員管理
             registAccountMng()
-            // sharedPreferencesの保存
-            saveSharedPrefarence()
-            // 次画面遷移
-            moveToTutorialView()
         }
     }
 
@@ -91,7 +96,7 @@ class Confirmation : AppCompatActivity() {
         obj.put("gender", userSex.text.toString())
         obj.put("highSchool", HighSchool.text.toString())
         obj.put("juniorHighSchool", JuniorHighSchool.text.toString())
-        obj.put("LoginFlg", "1")
+        obj.put("loginFlg", "1")
         obj.put("mailAddress", mailAddress.text.toString())
         obj.put("registTitle", "ホメ界の新星")
         obj.put("userName", userName.text.toString())
@@ -108,11 +113,17 @@ class Confirmation : AppCompatActivity() {
                 Log.d("[DEBUG]", obj.toString())
                 // objectIdを取得
                 this.objectId = obj.objectId
+                // sharedPreferencesの保存　←　画面遷移後のnullをなくすために早期にpreferenceを保存
+                saveSharedPrefarence()
+                // プロフィール画像の登録
+                saveProfileImg(intent.getStringExtra("filepath"))
                 // 初回のホメの登録
                 registE_serveFirst()
                 // 友達登録を実施
                 registM_friends()
             }
+            // 次画面遷移
+            moveToTutorialView()
         }
     }
 
@@ -201,6 +212,7 @@ class Confirmation : AppCompatActivity() {
 
     // 友達を登録する
     private fun registM_friends() {
+
         // ユーザマスタを検索
         val query = NCMBQuery<NCMBObject>("m_users")
         val query1 = NCMBQuery<NCMBObject>("m_users")
@@ -242,6 +254,7 @@ class Confirmation : AppCompatActivity() {
                                 throw e
                             } else {
                                 // 保存に成功した場合の処理
+
                                 Log.d("[DEBUG]", "保存成功　友達")
                                 Log.d("[DEBUG]", obj.toString())
                             }
@@ -264,7 +277,47 @@ class Confirmation : AppCompatActivity() {
 
         editor.putString("objectId",this.objectId)
         editor.putString("registTitle","ホメ界の新星")
+        editor.putString("updateFriendsTime", df.format(Date()))
         editor.putString("updateReceiveTableTime", df.format(Date())).apply()
+
+    }
+
+    private fun saveProfileImg (filepath:String) {
+        // 読み出し確認
+        val file = File(filepath)
+
+        try {
+            // ファイルパスをBitmapへ変換
+            FileInputStream(file).use({ inputStream0 ->
+                val bitmap = BitmapFactory.decodeStream(inputStream0)
+
+                // 画像をニフクラへ保存
+                val byteArrayStream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayStream)
+                val dataByte = byteArrayStream.toByteArray()
+
+                //ACL 読み込み:可 , 書き込み:可
+                val acl = NCMBAcl()
+                acl.publicReadAccess = true
+                acl.publicWriteAccess = true
+
+                // 登録するファイル情報
+                val file : NCMBFile = NCMBFile("${this.objectId}.png", dataByte, acl)
+                file.saveInBackground { e ->
+                    if (e != null) {
+                        // エラー時の処理
+                        Log.d("[DEBUG]", "画像の登録に失敗しました")
+                    } else {
+                        // 登録成功時の処理
+                        Log.d("[DEBUG]", "画像の登録に成功")
+                    }
+
+                }
+
+            })
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
 
     }
 

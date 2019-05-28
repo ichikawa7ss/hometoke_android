@@ -7,9 +7,6 @@
             android:layout_height="match_parent">
 
     <android.support.constraint.ConstraintLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context=".Confirmation" android:id="@+id/linearLayout2">
@@ -20,15 +17,18 @@
                 android:layout_height="wrap_content" app:srcCompat="@drawable/tourokukannryou"
                 android:id="@+id/imageView4"
                 app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginLeft="8dp" android:layout_marginStart="8dp" android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"/>
         <TextView
                 android:text="お名前"
-                android:layout_width="370dp"
+                android:layout_width="0dp"
                 app:layout_constraintWidth_percent="0.9"
                 android:layout_height="wrap_content" android:id="@+id/userNameLabel"
                 app:layout_constraintTop_toBottomOf="@+id/imageView4"
                 android:layout_marginTop="30dp" app:layout_constraintStart_toStartOf="@+id/imageView4"
-                app:layout_constraintEnd_toEndOf="@+id/imageView4"/>
+                app:layout_constraintEnd_toEndOf="@+id/imageView4" android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp" android:layout_marginRight="8dp" android:layout_marginEnd="8dp"/>
         <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" android:id="@+id/userName"
@@ -50,7 +50,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/userSexLabel"/>
         <TextView
                 android:text="生年月日"
-                android:layout_width="368dp"
+                android:layout_width="0dp"
                 android:layout_height="20dp" android:id="@+id/userBirthDayLabel"
                 app:layout_constraintEnd_toEndOf="@+id/userSex"
                 app:layout_constraintStart_toStartOf="@+id/userSexLabel"
@@ -97,7 +97,8 @@
                 android:layout_height="wrap_content" android:id="@+id/mailAddressLabel"
                 app:layout_constraintTop_toBottomOf="@+id/birthYearLabel" android:layout_marginTop="30dp"
                 app:layout_constraintEnd_toEndOf="@+id/userBirthDayLabel"
-                app:layout_constraintStart_toStartOf="@+id/userBirthDayLabel"/>
+                app:layout_constraintStart_toStartOf="@+id/userBirthDayLabel"
+        />
         <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" android:id="@+id/mailAddress"
@@ -198,6 +199,13 @@
                 app:layout_constraintEnd_toEndOf="@+id/HighSchoolSchoolLabel"
                 app:layout_constraintStart_toStartOf="@+id/HighSchoolSchoolLabel" android:background="#3B4043"
                 android:textColor="#FFFFFF"/>
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" tools:srcCompat="@tools:sample/avatars"
+                android:id="@+id/testView"
+                app:layout_constraintTop_toBottomOf="@+id/CompleteBtn"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="283dp"
+                android:layout_marginStart="283dp" app:layout_constraintEnd_toEndOf="parent"/>
     </android.support.constraint.ConstraintLayout>
 
 </ScrollView>
