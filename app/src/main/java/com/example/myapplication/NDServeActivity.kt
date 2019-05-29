@@ -113,8 +113,8 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         // NCMB初期化
         NCMB.initialize(
             applicationContext,
-            "4d5dd8d3a2c9d8030304c97a8e4fee8b5d8a6ccbe215cb1504679484290e2432",
-            "61982facb497f1f345b17ce84a0bc307f095cea9b7ccd56df908207ada19cc25"
+            "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1",
+            "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7"
         )
 
         updateMFriends()
@@ -195,8 +195,8 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
             } else {
                 Log.e("[ERROR]",e_access.toString())
             }
-            // 友達をキャッシュデータに保管
-            this.saveFriendCacheData()
+//            // 友達をキャッシュデータに保管
+//            this.saveFriendCacheData()
 
             // 質問選択
             this.decideQuestion()
@@ -214,6 +214,7 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         queryFriend.findInBackground { objs, error ->
             if (error == null ) {
                 this.dataFriend = objs
+                saveFriendCacheData()
             } else {
                 Log.e("[ERROR]",error.toString())
             }
@@ -225,19 +226,19 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         // 友達辞書からデータを取得
         for (data in dataFriend){
             // 友達IDに子オブジェクトがあれば読み出し
-            val userObjName = data.getJSONObject("friendId").getString("userName")
-            Log.d("[DEBUG]","${userObjName}の画像を読み込み中")
-            if (userObjName != null) {
+            val userObjId = data.getJSONObject("friendId").getString("objectId")
+            Log.d("[DEBUG]","${userObjId}の画像を読み込み中")
+            if (userObjId != null) {
                 // NCMBFileを宣言
-                val file = NCMBFile("${userObjName}_profile.png")
+                val file = NCMBFile("${userObjId}.png")
                 // 友達画像をキャッシュへ格納
                 file.fetchInBackground { imgFriecdData, eFile ->
                     if (eFile == null){
-                        Log.d("[DEBUG]","${userObjName}の画像を保存中")
-                        this.imgFriends[userObjName] = imgFriecdData
+                        Log.d("[DEBUG]","${userObjId}の画像を保存中")
+                        this.imgFriends[userObjId] = imgFriecdData
                     } else {
                         Log.e("[ERROR]",eFile.toString())
-                        Log.e("[ERROR]","友達画像のキャッシュへの保存に失敗しました　ユーザ名：${userObjName}")
+                        Log.e("[ERROR]","友達画像のキャッシュへの保存に失敗しました　ユーザID：${userObjId}")
                     }
                 }
             }
@@ -433,6 +434,7 @@ class NDServeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
             } else if (e == null){
                 // 異常なエラーがなければ
                 Log.d("[DEBUG]", "追加する友人がいません。アプリを広めましょう")
+                saveFriendData()
             } else {
                 Log.e("[ERROR]", "ニフクラへのアクセスに失敗")
                 Log.e("[ERROR]", e.toString())
