@@ -1,24 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="com.example.myapplication">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
             android:allowBackup="true"
+            android:debuggable="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme">
-        <activity android:name=".SelectPicture">
+            android:theme="@style/AppTheme"
+            tools:ignore="HardcodedDebugMode">
+        <activity android:name=".activity.CheckPersonalInfoActivity">
         </activity>
-        <activity android:name=".tutorialPageMock">
+        <activity android:name=".MainActivity">
         </activity>
-        <activity android:name=".Confirmation">
+        <activity
+                android:name=".NDReceiveActivity"
+                android:label="@string/title_activity_ndreceive"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+                android:name=".NDServeActivity"
+                android:label="@string/title_activity_ndserve"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".startPageTest">
         </activity>
         <activity
                 android:name=".IFcheckView"
@@ -26,15 +38,21 @@
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name=".SignUpView">
-        </activity>
-        <activity android:name=".MainActivity">
-        </activity>
-        <activity android:name=".startPageTest">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".SelectPicture">
+        </activity>
+        <activity android:name=".Confirmation">
+        </activity>
+        <activity android:name=".ReceiveDetailView">
+        </activity>
+        <activity android:name=".activity.SearchSchoolActivity">
+        </activity>
+        <activity android:name=".activity.RegisterSchoolsActivity">
         </activity>
     </application>
 

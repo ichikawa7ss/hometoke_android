@@ -11,19 +11,26 @@ import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.graphics.Bitmap
 import com.nifcloud.mbaas.core.NCMB
 import com.nifcloud.mbaas.core.NCMBFile
 import com.nifcloud.mbaas.core.NCMBAcl
 import android.graphics.BitmapFactory
-import android.view.View
 import com.isseiaoki.simplecropview.CropImageView
-import java.io.ByteArrayOutputStream
+import com.example.myapplication.activity.RegisterSchoolsActivity
+import android.content.ContentValues
+import android.graphics.Bitmap.CompressFormat
+import android.os.Environment
+import android.text.SpannableStringBuilder
+import java.io.*
 
+
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class SelectPicture : AppCompatActivity() {
 
     // ユーザ名
-    private var userNm = "defaultNm"
+    private var userName = "defaultNm"
 
     // カメラステータス
     companion object {
@@ -37,48 +44,91 @@ class SelectPicture : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_picture)
 
-        // 初期は画像未選択状態
-        SetProfileImageBtn.visibility = View.VISIBLE
-        skipBtn.visibility = View.VISIBLE
-        moveToConfirmationBtn.visibility = View.GONE
-        ChangeProfileImageBtn.visibility = View.GONE
-
         // ニフクラ
-        NCMB.initialize( applicationContext,
-            "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1",
-            "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7");
+        NCMB.initialize(
+            applicationContext,
+            "4d5dd8d3a2c9d8030304c97a8e4fee8b5d8a6ccbe215cb1504679484290e2432",
+            "61982facb497f1f345b17ce84a0bc307f095cea9b7ccd56df908207ada19cc25"
+        )
 
-        // 前画面からユーザ名を取得 // 画面　結合あとにコメントアウト解除
-        userNm = intent.getStringExtra("userNm")
+
+        // Preferenceの設定
+        val dataStore = getSharedPreferences("DataStore", Context.MODE_PRIVATE)
+
+        // Preferenceの設定からのデータ受け取り
+        userName = dataStore.getString("userName","")
 
         // 初期画像の設定
-        cropImageView.setImageBitmap(BitmapFactory.decodeResource(resources, R.drawable.noimage))
+        cropImageView.imageBitmap = decodeSampledBitmapFromFile(R.drawable.noimage,Constants.CROP_VIEW_WIDTH,Constants.CROP_VIEW_HEIGHT)
         cropImageView.setCropMode(CropImageView.CropMode.CIRCLE)
 
         // パーミッションの取得
         grantCameraPermission()
 
         // プロフィール画像の設定ボタンを押下
-        SetProfileImageBtn.setOnClickListener(){
+        SetProfileImageBtn.setOnClickListener {
             showSelector()
-        }
-
-        // スキップボタン押下時 -> 初期表示の画面が設定される
-        skipBtn.setOnClickListener() {
-            savePicture()
-            moveToConfirmation()
         }
 
         // 次へボタン押下時
-        moveToConfirmationBtn.setOnClickListener() {
-            savePicture()
-            moveToConfirmation()
-        }
+        moveToPersonalInfoBtn.setOnClickListener {
+            // TODO 画面を保存してパスを渡すメソッドを用意
 
-        // 再設定ボタン押下時
-        ChangeProfileImageBtn.setOnClickListener() {
-            showSelector()
+            val filepath =  saveImageToLocalFile()
+            moveToRegisterSchools(filepath)
         }
+    }
+
+    // TODO 実機デバッグした後にどうするか決める
+
+    // 次のActivityがforegroundに来るときに呼ばれる
+    override fun onPause() {
+        super.onPause()
+
+    }
+
+    // アクティビティ再表示のときに呼ばれる
+    override fun onResume() {
+        super.onResume()
+    }
+
+
+
+    // 画像のサイズを規定のサイズに合わせる
+    // サイズを変えずに画面遷移するとメモリリークとなる
+    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+
+        // 画像の元サイズ
+        val height = options.outHeight
+        val width = options.outWidth
+        var inSampleSize = 1
+        Log.d("[DEBUG]","元画像のサイズ : $height * $width")
+
+        // デフォルト画像サイズと要求画像サイズを比較
+        if (height > reqHeight || width > reqWidth) { //　画像より大きかったらリサイズの大きさを決める
+            if (width > height) {
+                inSampleSize = Math.round(height.toFloat() / reqHeight.toFloat())
+            } else {
+                inSampleSize = Math.round(width.toFloat() / reqWidth.toFloat())
+            }
+        }
+        return inSampleSize
+    }
+
+    private fun decodeSampledBitmapFromFile(id: Int, reqWidth: Int, reqHeight: Int): Bitmap {
+
+        // inJustDecodeBounds=true で画像のサイズをチェック
+        val options = BitmapFactory.Options()
+        options.inJustDecodeBounds = true
+        BitmapFactory.decodeResource(resources,id,options)
+        Log.d("[DEBUG]","画像の枠のサイズ : $reqHeight * $reqWidth")
+
+        // inSampleSize を計算
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
+
+        // inSampleSize をセットしてデコード
+        options.inJustDecodeBounds = false
+        return BitmapFactory.decodeResource(resources,id,options)
 
     }
 
@@ -123,34 +173,29 @@ class SelectPicture : AppCompatActivity() {
 
         // Chooserを起動する
         startActivityForResult(
-                intent, CAMERA_ROLE_REQUEST_CODE
+            intent, CAMERA_ROLE_REQUEST_CODE
         )
     }
 
-    // 撮影した画像への処理
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // カメラでとった画像はget"data"のselecteImageに入ってる
             data?.extras?.get("data")?.let { selectedImage ->
-                // 撮影した画像を画面に表示
-                val selectedImageBp = selectedImage as Bitmap
-                cropImageView.setImageBitmap(selectedImageBp)
-                // 画像選択状態に切り替え
-                SetProfileImageBtn.visibility = View.GONE
-                skipBtn.visibility = View.GONE
-                moveToConfirmationBtn.visibility = View.VISIBLE
-                ChangeProfileImageBtn.visibility = View.VISIBLE
 
+                selectedImage as Bitmap
+                //  画像はリサイズした上で表示
+                cropImageView.imageBitmap =
+                    Bitmap.createScaledBitmap(selectedImage,Constants.CROP_VIEW_WIDTH,Constants.CROP_VIEW_HEIGHT,true)
             }
         } else if (requestCode == CAMERA_ROLE_REQUEST_CODE && resultCode == Activity.RESULT_OK){
             data?.data.let { uri ->
+
                 // 撮影した画像を画面に表示
-                var bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri)
-                cropImageView.setImageBitmap(bitmap)
-                // 画像選択状態に切り替え
-                SetProfileImageBtn.visibility = View.GONE
-                skipBtn.visibility = View.GONE
-                moveToConfirmationBtn.visibility = View.VISIBLE
-                ChangeProfileImageBtn.visibility = View.VISIBLE
+                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+
+                //  画像はリサイズした上で表示
+                cropImageView.imageBitmap =
+                    Bitmap.createScaledBitmap(bitmap,Constants.CROP_VIEW_WIDTH,Constants.CROP_VIEW_HEIGHT,true)
             }
         }
     }
@@ -161,7 +206,8 @@ class SelectPicture : AppCompatActivity() {
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), CAMERA_ROLE_PERMISSION_REQUEST_CODE)
     }
 
-    // 写真(デフォルト)をDBに保存する
+    // TODO　あとで消す
+
     private fun savePicture() {
         // 画像をニフクラへ保存
         // 画像の変換
@@ -175,8 +221,8 @@ class SelectPicture : AppCompatActivity() {
         acl.publicWriteAccess = true
 
         // 登録するファイル情報
-        val file : NCMBFile = NCMBFile("${userNm}_profile.png", dataByte, acl);
-        file.saveInBackground() { e ->
+        val file : NCMBFile = NCMBFile("${userName}_profile.png", dataByte, acl)
+        file.saveInBackground { e ->
             if (e != null) {
                 // エラー時の処理
                 Log.d("[DEBUG]", "画像の登録に失敗しました")
@@ -188,29 +234,54 @@ class SelectPicture : AppCompatActivity() {
         }
     }
 
+    private fun saveImageToLocalFile(): String{
+
+        // 保存するためのディレクトリを作成
+        val SAVE_DIR = "/MyPhoto/"
+        val file = File(this.applicationContext.filesDir,"/MyPhoto/")
+        try {
+            if (!file.exists()) {
+                file.mkdir()
+            }
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+            throw e
+        }
+
+        // 画像名は一律で"profileImg.jpg"に統一
+        val fileName = "profileImg.jpeg"
+        val filePath = File(file, fileName)
+        try {
+            val out = FileOutputStream(filePath)
+            // 端末内に画像を保存
+            cropImageView.croppedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+            out.flush()
+            out.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            throw e
+        }
+
+        return filePath.toString()
+    }
+
     // 次画面へ遷移する
-    private fun moveToConfirmation () {
+    private fun moveToRegisterSchools (filepath : String) {
 
         // 次画面intentの生成
-        val confirmationIntent = Intent(getApplication(), Confirmation::class.java)
+        val registSchoolsIntent = Intent(application, RegisterSchoolsActivity::class.java)
 
-        // データのセット
-        confirmationIntent.putExtra("userNm", intent.getStringExtra("userNm"))
-        confirmationIntent.putExtra("userSex", intent.getStringExtra("userSex"))
-        confirmationIntent.putExtra("userBirthYear", intent.getStringExtra("userBirthYear"))
-        confirmationIntent.putExtra("userBirthMonth", intent.getStringExtra("userBirthMonth"))
-        confirmationIntent.putExtra("userBirthDay", intent.getStringExtra("userBirthDay"))
-        confirmationIntent.putExtra("elementarySchool", intent.getStringExtra("elementarySchool"))
-        confirmationIntent.putExtra("juniorHighSchool", intent.getStringExtra("juniorHighSchool"))
-        confirmationIntent.putExtra("highSchool", intent.getStringExtra("highSchool"))
-        confirmationIntent.putExtra("elementalySchoolEntryYear", intent.getStringExtra("elementalySchoolEntryYear"))
-        confirmationIntent.putExtra("juniorHighSchoolEntryYear", intent.getStringExtra("juniorHighSchoolEntryYear"))
-        confirmationIntent.putExtra("highSchoolEntryYear", intent.getStringExtra("highSchoolEntryYear"))
-        confirmationIntent.putExtra("mailAddress", intent.getStringExtra("mailAddress"))
-        confirmationIntent.putExtra("password", intent.getStringExtra("password"))
+        // 全画面から受けた生年月日入力チェック結果を次画面に渡す
+        registSchoolsIntent.putExtra(
+            "checkInputBirthday",
+            intent.getBooleanExtra("checkImputBirthday",true)
+        )
+
+        // プロフィール画面のパスを次画面に渡す
+        registSchoolsIntent.putExtra("filepath",filepath)
 
         // 次画面遷移
-        startActivity(confirmationIntent);
+        startActivity(registSchoolsIntent)
     }
 
 }

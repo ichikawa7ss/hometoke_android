@@ -13,11 +13,11 @@
         <TextView
                 android:text="名前："
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/userNmLabel"/>
+                android:layout_height="wrap_content" android:id="@+id/userNameLabel"/>
         <TextView
                 android:text="TextView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/userNm"/>
+                android:layout_height="wrap_content" android:id="@+id/userName"/>
     </LinearLayout>
     <LinearLayout
             android:orientation="horizontal"

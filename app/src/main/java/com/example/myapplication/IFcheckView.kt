@@ -11,7 +11,7 @@ class IFcheckView : AppCompatActivity() {
         setContentView(R.layout.activity_ifcheck_view)
 
         // テータの登録
-        userNm.text = intent.getStringExtra("userNm")
+        userName.text = intent.getStringExtra("userName")
         userSex.text = intent.getStringExtra("userSex")
         userBirthYear.text = intent.getStringExtra("userBirthYear")
         userBirthMonth.text = intent.getStringExtra("userBirthMonth")
