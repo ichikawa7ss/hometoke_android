@@ -35,8 +35,8 @@ class Confirmation : AppCompatActivity() {
         // 初期化
         NCMB.initialize(
             applicationContext,
-            "1115bda19d0575ef1b6650b35fbfaac587e5dd28bf61f23c9d03405052fa3be1",
-            "ebf5c8d490aa0bc70fa7cc617f0b426422812c3ddccda0bc16de3c0088890de7"
+            "4d5dd8d3a2c9d8030304c97a8e4fee8b5d8a6ccbe215cb1504679484290e2432",
+            "61982facb497f1f345b17ce84a0bc307f095cea9b7ccd56df908207ada19cc25"
         )
 
         // TODO　デバッグ後消す
