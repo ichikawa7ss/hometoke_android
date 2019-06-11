@@ -63,7 +63,6 @@ class RegisterSchoolsActivity : AppCompatActivity(), View.OnClickListener {
                 }
 
                 R.id.highsch -> {
-                    println("高校ボタン押下")
                     // 高等学校のテキストフィールドが選択された場合
                     val intent = Intent(this, SearchSchoolActivity::class.java)
                     // 小中高の区別にRequestCodeを使用

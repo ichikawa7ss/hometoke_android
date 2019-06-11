@@ -39,7 +39,6 @@ class CheckPersonalInfoActivity : AppCompatActivity() {
     }
 
     fun moveToConfirmationView() {
-        println("次へボタン押下")
 
         if (checkClick) {
             // 同意されていれば画面遷移
