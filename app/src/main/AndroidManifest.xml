@@ -35,8 +35,6 @@
                 android:label="@string/title_activity_ndserve"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".startPageTest">
-        </activity>
         <activity
                 android:name=".IFcheckView"
                 android:label="@string/title_activity_ifcheck_view"

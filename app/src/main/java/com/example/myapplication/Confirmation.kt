@@ -73,6 +73,15 @@ class Confirmation : AppCompatActivity() {
 
         // 完了ボタン押下
         CompleteBtn.setOnClickListener() {
+
+            // ログインフラグを立てる
+
+            val PREFERENCES_FILE_NAME = "preference"
+
+            val settings = getSharedPreferences(PREFERENCES_FILE_NAME, 0) // 0 -> MODE_PRIVATE
+            val editor = settings.edit()
+            editor.putLong("logged-in", 1).apply()
+
             // ユーザ登録・初回褒め登録・友達登録
             registM_users()
             // 会員管理

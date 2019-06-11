@@ -31,12 +31,6 @@ class SignUpView : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up_view)
 
-        val PREFERENCES_FILE_NAME = "preference"
-
-        val settings = getSharedPreferences(PREFERENCES_FILE_NAME, 0) // 0 -> MODE_PRIVATE
-        val editor = settings.edit()
-        editor.putLong("logged-in", 1).apply()
-
         // 入力値の型の指定
         birthYear.inputType = InputType.TYPE_CLASS_NUMBER
         birthMonth.inputType = InputType.TYPE_CLASS_NUMBER
